@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
+    alias(libs.plugins.kotlinKsp)
 }
 
 android {
@@ -58,4 +59,15 @@ dependencies {
     implementation libs.material3
     debugImplementation libs.ui.tooling
     debugImplementation libs.ui.test.manifest
+
+    // room region
+    implementation libs.room.runtime
+    ksp libs.room.compiler
+    // end region
+
+    // di region
+    implementation libs.hilt.android
+    ksp libs.hilt.compiler
+    // end region
+
 }
