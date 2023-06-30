@@ -5,7 +5,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.practice.calendar.data.local.entity.EventDbEntity
-import com.practice.calendar.data.local.entity.EventItemTuple
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -14,12 +13,12 @@ interface EventDao {
     @Query("SELECT * FROM events WHERE id = :id")
     fun getById(id: Long): Flow<EventDbEntity?>
 
-    @Query("SELECT id, date_start, date_finish, name FROM events " +
+    @Query("SELECT * FROM events " +
             "WHERE date_start >= :dateStart AND date_finish < :dateFinish")
     fun getByDate(
         dateStart: Long,
         dateFinish: Long = dateStart + SECONDS_IN_DAY
-    ): Flow<List<EventItemTuple>?>
+    ): Flow<List<EventDbEntity>?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createEvent(eventDbEntity: EventDbEntity)
