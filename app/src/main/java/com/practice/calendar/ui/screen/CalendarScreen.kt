@@ -122,7 +122,7 @@ fun TaskItem(task: TaskLiteEntity) {
 
 @Preview(showBackground = true)
 @Composable
-fun Preview() {
+fun CalendarPreview() {
     CalendarTheme {
         CalendarScreen()
     }
