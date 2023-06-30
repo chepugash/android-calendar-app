@@ -39,10 +39,6 @@ fun CalendarScreen() {
     Column (
         modifier = Modifier.fillMaxSize()
     ) {
-        var pickedDate by remember {
-            mutableStateOf(LocalDate.now())
-        }
-        val dateDialogState = rememberMaterialDialogState()
         CalendarToolbar()
         TaskTable(tasks = tasks)
     }
