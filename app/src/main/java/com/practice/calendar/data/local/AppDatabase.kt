@@ -9,4 +9,8 @@ import com.practice.calendar.data.local.entity.EventDbEntity
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun getEventDao(): EventDao
+
+    companion object {
+        const val DB_NAME = "AppDatabase"
+    }
 }
