@@ -3,11 +3,8 @@ package com.practice.calendar.data.mapper
 import com.practice.calendar.data.local.entity.EventDbEntity
 import com.practice.calendar.data.remote.response.EventResponseEntity
 import com.practice.calendar.domain.entity.EventInfo
-import java.sql.Timestamp
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.ZoneOffset
+import com.practice.calendar.util.localDateTimeToTimestamp
+import com.practice.calendar.util.timestampToLocalDateTime
 
 // remote entity to local
 fun EventResponseEntity.toEventDbEntity(): EventDbEntity = EventDbEntity(
@@ -17,6 +14,11 @@ fun EventResponseEntity.toEventDbEntity(): EventDbEntity = EventDbEntity(
     name = name,
     description = description
 )
+
+// remote list of entities to local
+fun List<EventResponseEntity>.toEventDbEntityList(): List<EventDbEntity> = map {
+    it.toEventDbEntity()
+}
 
 // data layer entity to domain layer entity
 fun EventDbEntity.toEventInfo(): EventInfo = EventInfo(
@@ -35,12 +37,3 @@ fun EventInfo.toEventDbEntity(): EventDbEntity = EventDbEntity(
     name = name,
     description = description
 )
-
-private fun timestampToLocalDateTime(timestamp: Long): LocalDateTime {
-    val instant = Instant.ofEpochMilli(timestamp)
-    return LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
-}
-
-private fun localDateTimeToTimestamp(ldt: LocalDateTime): Long {
-    return ldt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-}
