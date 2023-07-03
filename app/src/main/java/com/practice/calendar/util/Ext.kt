@@ -2,6 +2,7 @@ package com.practice.calendar.util
 
 import android.content.Context
 import java.io.IOException
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -24,5 +25,9 @@ fun LocalDateTime.formatToTime(): String {
 }
 
 fun LocalDateTime.formatToDate(): String {
+    return this.format(DateTimeFormatter.ofPattern(DATE_FORMAT))
+}
+
+fun LocalDate.formatToDate(): String {
     return this.format(DateTimeFormatter.ofPattern(DATE_FORMAT))
 }

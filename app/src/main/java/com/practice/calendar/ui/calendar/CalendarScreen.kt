@@ -34,10 +34,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.practice.calendar.R
 import com.practice.calendar.ui.theme.CalendarTheme
+import com.practice.calendar.util.formatToDate
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Composable
 fun CalendarScreen() {
@@ -96,7 +98,7 @@ fun DatePicker() {
             dateDialogState.show()
         }) {
             Text(
-                text = pickedDate.toString(),
+                text = pickedDate.formatToDate(),
                 fontSize = 24.sp
             )
         }
