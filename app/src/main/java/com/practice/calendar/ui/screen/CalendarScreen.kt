@@ -2,14 +2,11 @@
 
 package com.practice.calendar.ui.screen
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -20,14 +17,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.practice.calendar.R
-import com.practice.calendar.ui.TaskLiteEntity
-import com.practice.calendar.ui.tasks
 import com.practice.calendar.ui.theme.CalendarTheme
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
@@ -36,14 +32,15 @@ import java.time.LocalDate
 
 @Composable
 fun CalendarScreen() {
-    Column (
+    Column(
         modifier = Modifier.fillMaxSize()
     ) {
         CalendarToolbar()
-        TaskTable(tasks = tasks)
+//        TaskTable(tasks = tasks)
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalendarToolbar() {
     TopAppBar(
@@ -53,8 +50,10 @@ fun CalendarToolbar() {
         navigationIcon = {
             Icon(
                 painterResource(id = R.drawable.ic_calendar),
-                contentDescription = "toolbar calendar icon")
-        }
+                contentDescription = "toolbar calendar icon",
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+            )
+        },
     )
 }
 
@@ -68,7 +67,10 @@ fun DatePicker() {
         TextButton(onClick = {
             dateDialogState.show()
         }) {
-            Text(text = pickedDate.toString())
+            Text(
+                text = pickedDate.toString(),
+                fontSize = 24.sp
+            )
         }
     }
     MaterialDialog(
@@ -84,35 +86,6 @@ fun DatePicker() {
         ) {
             pickedDate = it
         }
-    }
-}
-
-@Composable
-fun TaskTable(tasks: List<TaskLiteEntity>) {
-    LazyColumn(
-        modifier = Modifier.fillMaxHeight()
-    ) {
-        items(tasks.size) {
-            TaskItem(task = tasks[it])
-        }
-    }
-}
-
-@Composable
-fun TaskItem(task: TaskLiteEntity) {
-    Row(
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = task.time,
-            modifier = Modifier.padding(end = 16.dp)
-        )
-        Text(text = task.name)
-
     }
 }
 
