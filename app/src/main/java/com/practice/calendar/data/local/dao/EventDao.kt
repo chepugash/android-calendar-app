@@ -18,16 +18,16 @@ interface EventDao {
             "WHERE date_start >= :dateStart AND date_finish < :dateFinish")
     fun getByDate(
         dateStart: Long,
-        dateFinish: Long = dateStart + SECONDS_IN_DAY
+        dateFinish: Long = dateStart + MILLISECONDS_IN_DAY
     ): Flow<List<EventDbEntity>?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createEvent(eventDbEntity: EventDbEntity)
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveEvents(events: List<EventDbEntity>)
 
     companion object {
-        private const val SECONDS_IN_DAY = 86400
+        private const val MILLISECONDS_IN_DAY = 86400000
     }
 }

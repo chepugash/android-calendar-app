@@ -14,7 +14,7 @@ class EventApiImpl @Inject constructor(
     @ApplicationContext private val appContext: Context
 ) : EventApi {
 
-    override fun getEvents(): List<EventResponseEntity> {
+    override suspend fun getEvents(): List<EventResponseEntity> {
         val jsonString = appContext.getJsonFileFromAssets(FILE_NAME)
         val gson = Gson()
         val listEventType = object : TypeToken<List<EventResponseEntity>>() {}.type
