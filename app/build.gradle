@@ -61,19 +61,28 @@ dependencies {
     implementation libs.ui.graphics
     implementation libs.ui.tooling.preview
     implementation libs.material3
+    implementation libs.androidx.lifecycle.runtime.compose
+    implementation libs.androidx.lifecycle.viewmodel.compose
     debugImplementation libs.ui.tooling
     debugImplementation libs.ui.test.manifest
 
-    // data region
+    implementation libs.kotlinx.collections.immutable
+
+    // room region
     implementation libs.room.runtime
     ksp libs.room.compiler
     implementation libs.room.ktx
+    // end region
+
+    // gson converter region
     implementation libs.gson
     // end region
 
-    // di region
+    // dagger hilt region
     implementation libs.hilt.android
     ksp libs.hilt.compiler
+    implementation libs.hilt.viewmodel
+    ksp libs.hilt.android.compiler
     // end region
 
     // dialogs region

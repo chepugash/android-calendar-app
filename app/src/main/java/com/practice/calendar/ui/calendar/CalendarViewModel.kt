@@ -8,7 +8,14 @@ import androidx.lifecycle.viewModelScope
 import com.practice.calendar.domain.usecase.GetEventsUseCase
 import com.practice.calendar.domain.usecase.UpdateEventsFromRemoteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -20,27 +27,15 @@ class CalendarViewModel @Inject constructor(
     private val updateEventsFromRemoteUseCase: UpdateEventsFromRemoteUseCase
 ): ViewModel() {
 
-    var state by mutableStateOf(CalendarState())
-        private set
+    private val _state = MutableStateFlow<CalendarState>(CalendarState())
+    val state: StateFlow<CalendarState>
+        get() = _state.asStateFlow()
 
-    fun loadEventsByDate(date: LocalDate) {
-        viewModelScope.launch {
-            try {
-                getEventsUseCase(date).let {
-                    it.collect { list ->
-                        state = state.copy(
-                            eventInfoList = list,
-                            error = null
-                        )
-                    }
-                }
-                updateEventsFromRemoteUseCase()
-            } catch(error: Throwable) {
-                state = state.copy(
-                    eventInfoList = null,
-                    error = error.message
-                )
-            }
-        }
+    private val _action = MutableSharedFlow<CalendarAction?>()
+    val action: SharedFlow<CalendarAction?>
+        get() = _action.asSharedFlow()
+
+    fun effect(calendarEffect: CalendarEffect) {
+
     }
 }
