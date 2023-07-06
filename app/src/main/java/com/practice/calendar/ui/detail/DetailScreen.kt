@@ -28,7 +28,6 @@ import com.practice.calendar.ui.theme.CalendarTheme
 import com.practice.calendar.util.formatToDate
 import com.practice.calendar.util.formatToTime
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun DetailScreen(

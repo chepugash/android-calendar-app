@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter
 
 const val TIME_FORMAT = "HH:mm"
 const val DATE_FORMAT = "d MMM, yyyy"
+const val MINUTES_IN_HOUR = 60
 
 fun Context.getJsonFileFromAssets(fileName: String): String? {
     val jsonString: String
@@ -30,4 +31,8 @@ fun LocalDateTime.formatToDate(): String {
 
 fun LocalDate.formatToDate(): String {
     return this.format(DateTimeFormatter.ofPattern(DATE_FORMAT))
+}
+
+fun LocalDateTime.timeInMinutes(): Int {
+    return this.hour * MINUTES_IN_HOUR + this.minute
 }

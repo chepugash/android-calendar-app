@@ -4,9 +4,8 @@ import com.practice.calendar.domain.entity.EventInfo
 import com.practice.calendar.domain.repository.EventRepository
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
-import javax.inject.Inject
 
-class GetEventsUseCase @Inject constructor(
+class GetEventsUseCase(
     private val eventRepository: EventRepository
 ) {
 

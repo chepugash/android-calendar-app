@@ -6,7 +6,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.practice.calendar.data.local.entity.EventDbEntity
 import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
 
 @Dao
 interface EventDao {

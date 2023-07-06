@@ -35,22 +35,33 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.practice.calendar.R
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.practice.calendar.domain.entity.EventInfo
 import com.practice.calendar.ui.theme.CalendarTheme
 import com.practice.calendar.util.formatToDate
+import com.practice.calendar.util.timeInMinutes
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDate
 
 @Composable
 fun CalendarScreen(
-    viewModel: CalendarViewModel = viewModel()
+    viewModel: CalendarViewModel = koinViewModel()
 ) {
 
     val state = viewModel.state.collectAsStateWithLifecycle()
     val action by viewModel.action.collectAsStateWithLifecycle(null)
 
+    CalendarContent(viewState = state.value,)
+
+    CalendarScreenActions()
+}
+
+@Composable
+fun CalendarContent(
+    viewState: CalendarState,
+) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -65,18 +76,14 @@ fun CalendarScreen(
             HoursList()
             Box {
                 TimeTable()
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                ) {
-                    EventCard(120, 150)
-                    EventCard(500, 800)
-                    EventCard(1000, 1100)
-                }
+                EventList(viewState = viewState)
             }
         }
     }
 }
+
+@Composable
+private fun CalendarScreenActions() {}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -129,7 +136,25 @@ fun DatePicker() {
 }
 
 @Composable
-fun EventCard(minuteStart: Int, minuteFinish: Int) {
+fun EventList(
+    viewState: CalendarState,
+) {
+    if (viewState.eventInfoList != null) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            repeat(viewState.eventInfoList.size) {index ->
+                EventCard(viewState.eventInfoList[index])
+            }
+        }
+    }
+}
+
+@Composable
+fun EventCard(eventInfo: EventInfo) {
+    val minuteStart = eventInfo.dateStart.timeInMinutes()
+    val minuteFinish = eventInfo.dateFinish.timeInMinutes()
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -194,8 +219,8 @@ fun TimeTable() {
 
 @Preview(showBackground = true)
 @Composable
-fun CalendarPreview() {
+private fun CalendarPreview() {
     CalendarTheme {
-        CalendarScreen()
+//        CalendarScreen()
     }
 }

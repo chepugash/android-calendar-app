@@ -8,44 +8,35 @@ import com.practice.calendar.data.remote.EventApi
 import com.practice.calendar.data.remote.EventApiImpl
 import com.practice.calendar.data.repository.EventRepositoryImpl
 import com.practice.calendar.domain.repository.EventRepository
-import dagger.Binds
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-abstract class RepositoryModule {
+val repositoryModule = module {
 
-    @Binds
-    @Singleton
-    abstract fun bindEventRepository(
-        eventRepositoryImpl: EventRepositoryImpl
-    ): EventRepository
+    single<EventRepository> {
+        EventRepositoryImpl(api = get(), dao = get())
+    }
 
-    @Binds
-    @Singleton
-    abstract fun bindEventApi(
-        eventApiImpl: EventApiImpl
-    ): EventApi
+    single<EventApi> {
+        EventApiImpl(appContext = get())
+    }
 
-    @Provides
-    @Singleton
-    fun provideDatabase(
-        @ApplicationContext appContext: Context
-    ): AppDatabase =
-        Room.databaseBuilder(
-            appContext,
-            AppDatabase::class.java,
-            AppDatabase.DB_NAME
-        ).build()
+    single<AppDatabase> {
+        provideDatabase(appContext = get())
+    }
 
-    @Provides
-    @Singleton
-    fun provideEventDao(
-        appDatabase: AppDatabase
-    ): EventDao = appDatabase.getEventDao()
+    single<EventDao> {
+        provideEventDao(appDatabase = get())
+    }
 }
+
+private fun provideDatabase(
+    appContext: Context
+): AppDatabase = Room.databaseBuilder(
+    appContext,
+    AppDatabase::class.java,
+    AppDatabase.DB_NAME
+).build()
+
+private fun provideEventDao(
+    appDatabase: AppDatabase
+): EventDao = appDatabase.getEventDao()

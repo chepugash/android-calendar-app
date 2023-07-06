@@ -9,9 +9,8 @@ import com.practice.calendar.domain.entity.EventInfo
 import com.practice.calendar.domain.repository.EventRepository
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
-import javax.inject.Inject
 
-class EventRepositoryImpl @Inject constructor(
+class EventRepositoryImpl(
     private val api: EventApi,
     private val dao: EventDao
 ) : EventRepository {

@@ -63,6 +63,7 @@ dependencies {
     implementation libs.material3
     implementation libs.androidx.lifecycle.runtime.compose
     implementation libs.androidx.lifecycle.viewmodel.compose
+    implementation libs.navigation.compose
     debugImplementation libs.ui.tooling
     debugImplementation libs.ui.test.manifest
 
@@ -78,11 +79,10 @@ dependencies {
     implementation libs.gson
     // end region
 
-    // dagger hilt region
-    implementation libs.hilt.android
-    ksp libs.hilt.compiler
-    implementation libs.hilt.viewmodel
-    ksp libs.hilt.android.compiler
+    // koin region
+    implementation libs.koin.core
+    implementation libs.koin.android
+    implementation libs.koin.android.compose
     // end region
 
     // dialogs region
