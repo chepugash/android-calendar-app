@@ -1,5 +1,6 @@
 package com.practice.calendar.data.repository
 
+import android.util.Log
 import com.practice.calendar.data.local.dao.EventDao
 import com.practice.calendar.data.mapper.localDateToTimestamp
 import com.practice.calendar.data.mapper.toEventDbEntityList
@@ -21,6 +22,7 @@ class EventRepositoryImpl(
 
     override suspend fun updateEventsFromRemote() {
         val remoteEvents = api.getEvents()
+        Log.e("AAA", remoteEvents.toString())
         dao.saveEvents(remoteEvents.toEventDbEntityList())
     }
 }

@@ -38,6 +38,7 @@ import com.practice.calendar.R
 import com.practice.calendar.domain.entity.EventInfo
 import com.practice.calendar.ui.theme.CalendarTheme
 import com.practice.calendar.util.formatToDate
+import com.practice.calendar.util.formatToTime
 import com.practice.calendar.util.timeInMinutes
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
@@ -162,9 +163,12 @@ fun EventCard(eventInfo: EventInfo) {
             .offset(y = minuteStart.dp + 30.dp)
             .height((minuteFinish - minuteStart).dp)
     ) {
-        Text(
-            text = "$minuteStart - $minuteFinish"
-        )
+        Column {
+            Text(text = eventInfo.name)
+            Text(
+                text = "${eventInfo.dateStart.formatToTime()} - ${eventInfo.dateFinish.formatToTime()}"
+            )
+        }
     }
 }
 
