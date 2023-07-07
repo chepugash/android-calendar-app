@@ -36,6 +36,7 @@ class CalendarViewModel(
             CalendarEffect.OnDateClick -> onDateClick()
             is CalendarEffect.OnConfirmDialog -> onConfirmDialog(calendarEffect)
             CalendarEffect.OnCloseDialog -> onCloseDialog()
+            is CalendarEffect.OnEventClick -> onEventClick(calendarEffect.eventId)
         }
     }
 
@@ -85,6 +86,14 @@ class CalendarViewModel(
                 _state.value.copy(
                     showDialog = true
                 )
+            )
+        }
+    }
+
+    private fun onEventClick(eventId: Long) {
+        viewModelScope.launch {
+            _action.emit(
+                CalendarAction.NavigateDetail(eventId = eventId)
             )
         }
     }

@@ -2,5 +2,5 @@ package com.practice.calendar.ui.calendar
 
 sealed interface CalendarAction {
 
-    object ShowDialog : CalendarAction
+    data class NavigateDetail(val eventId: Long) : CalendarAction
 }

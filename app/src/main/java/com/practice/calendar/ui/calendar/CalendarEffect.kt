@@ -9,4 +9,6 @@ sealed interface CalendarEffect {
     data class OnConfirmDialog(val date: LocalDate) : CalendarEffect
 
     object OnCloseDialog : CalendarEffect
+
+    data class OnEventClick(val eventId: Long) : CalendarEffect
 }

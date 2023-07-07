@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,7 +62,10 @@ fun CalendarScreen(
         navController
     )
 
-    CalendarScreenActions()
+    CalendarScreenActions(
+        navController = navController,
+        viewAction = action,
+    )
 }
 
 @Composable
@@ -87,14 +91,28 @@ fun CalendarContent(
             HoursList()
             Box {
                 TimeTable()
-                EventList(viewState = viewState, navController = navController)
+                EventList(viewState = viewState, effectHandler = effectHandler)
             }
         }
     }
 }
 
 @Composable
-private fun CalendarScreenActions() {}
+private fun CalendarScreenActions(
+    navController: NavController,
+    viewAction: CalendarAction?,
+) {
+    LaunchedEffect(viewAction) {
+        when (viewAction) {
+            null -> Unit
+            is CalendarAction.NavigateDetail -> {
+                navController.navigate(
+                    DestinationScreen.DetailScreen.withArgs(viewAction.eventId.toString())
+                )
+            }
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -159,7 +177,7 @@ fun DatePicker(
 @Composable
 fun EventList(
     viewState: CalendarState,
-    navController: NavController
+    effectHandler: (CalendarEffect) -> Unit
 ) {
     val events = viewState.eventInfoList
     if (events != null) {
@@ -168,7 +186,12 @@ fun EventList(
                 .fillMaxSize()
         ) {
             repeat(events.size) {index ->
-                EventCard(events[index], navController)
+                EventCard(
+                    eventInfo = events[index],
+                    onCLick = {
+                        effectHandler.invoke(CalendarEffect.OnEventClick(events[index].id))
+                    }
+                )
             }
         }
     }
@@ -177,7 +200,7 @@ fun EventList(
 @Composable
 fun EventCard(
     eventInfo: EventInfo,
-    navController: NavController
+    onCLick: (Long) -> Unit
 ) {
     val minuteStart = eventInfo.dateStart.timeInMinutes()
     val minuteFinish = eventInfo.dateFinish.timeInMinutes()
@@ -188,11 +211,7 @@ fun EventCard(
             .height((minuteFinish - minuteStart).dp)
             .padding(start = 4.dp)
             .clip(RoundedCornerShape(12.dp))
-            .clickable {
-                navController.navigate(
-                   DestinationScreen.DetailScreen.withArgs(eventInfo.id.toString())
-                )
-            }
+            .clickable { onCLick.invoke(eventInfo.id) }
     ) {
         Column{
             Text(text = eventInfo.name)
