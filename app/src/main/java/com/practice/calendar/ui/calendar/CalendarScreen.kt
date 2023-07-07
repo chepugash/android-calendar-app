@@ -2,6 +2,7 @@
 
 package com.practice.calendar.ui.calendar
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
@@ -23,28 +25,58 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.practice.calendar.R
+import com.practice.calendar.domain.entity.EventInfo
+import com.practice.calendar.ui.navigation.DestinationScreen
 import com.practice.calendar.ui.theme.CalendarTheme
+import com.practice.calendar.util.formatToDate
+import com.practice.calendar.util.formatToTime
+import com.practice.calendar.util.timeInMinutes
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
-import java.time.LocalDate
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun CalendarScreen() {
+fun CalendarScreen(
+    viewModel: CalendarViewModel = koinViewModel(),
+    navController: NavController
+) {
+
+    val state = viewModel.state.collectAsStateWithLifecycle()
+    val action by viewModel.action.collectAsStateWithLifecycle(null)
+
+    CalendarContent(viewState = state.value,
+        effectHandler = viewModel::effect,
+        navController
+    )
+
+    CalendarScreenActions()
+}
+
+@Composable
+fun CalendarContent(
+    viewState: CalendarState,
+    effectHandler: (CalendarEffect) -> Unit,
+    navController: NavController
+) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        CalendarToolbar()
+        CalendarToolbar(
+            viewState = viewState,
+            effectHandler = effectHandler
+        )
         Row(
             modifier = Modifier
                 .fillMaxSize()
@@ -55,25 +87,24 @@ fun CalendarScreen() {
             HoursList()
             Box {
                 TimeTable()
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                ) {
-                    EventCard(120, 150)
-                    EventCard(500, 800)
-                    EventCard(1000, 1100)
-                }
+                EventList(viewState = viewState, navController = navController)
             }
         }
     }
 }
 
+@Composable
+private fun CalendarScreenActions() {}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CalendarToolbar() {
+fun CalendarToolbar(viewState: CalendarState, effectHandler: (CalendarEffect) -> Unit) {
     TopAppBar(
         title = {
-            DatePicker()
+            DatePicker(
+                viewState = viewState,
+                effectHandler = effectHandler
+            )
         },
         navigationIcon = {
             Icon(
@@ -81,54 +112,94 @@ fun CalendarToolbar() {
                 contentDescription = "toolbar calendar icon",
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp)
             )
-        },
+        }
     )
 }
 
 @Composable
-fun DatePicker() {
-    var pickedDate by remember {
-        mutableStateOf(LocalDate.now())
-    }
+fun DatePicker(
+    viewState: CalendarState,
+    effectHandler: (CalendarEffect) -> Unit
+) {
     val dateDialogState = rememberMaterialDialogState()
     Row {
         TextButton(onClick = {
-            dateDialogState.show()
+            effectHandler.invoke(CalendarEffect.OnDateClick)
         }) {
             Text(
-                text = pickedDate.toString(),
-                fontSize = 24.sp
+                text = viewState.date.formatToDate(),
+                fontSize = 24.sp,
+                color = Color.Blue
             )
         }
     }
     MaterialDialog(
         dialogState = dateDialogState,
         buttons = {
-            positiveButton(text = "Ok")
-            negativeButton(text = "Cancel")
-        }
+            positiveButton(text = "ок")
+            negativeButton(text = "закрыть") {
+                effectHandler.invoke(CalendarEffect.OnCloseDialog)
+            }
+        },
+        onCloseRequest = {
+            effectHandler.invoke(CalendarEffect.OnCloseDialog)
+        },
+        autoDismiss = false
     ) {
         datepicker(
-            initialDate = LocalDate.now(),
-            title = "Pick a date"
+            initialDate = viewState.date,
+            title = "Pick a date",
         ) {
-            pickedDate = it
+            effectHandler.invoke(CalendarEffect.OnConfirmDialog(it))
+        }
+    }
+    if (viewState.showDialog) { dateDialogState.show() } else { dateDialogState.hide() }
+}
+
+@Composable
+fun EventList(
+    viewState: CalendarState,
+    navController: NavController
+) {
+    val events = viewState.eventInfoList
+    if (events != null) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            repeat(events.size) {index ->
+                EventCard(events[index], navController)
+            }
         }
     }
 }
 
 @Composable
-fun EventCard(minuteStart: Int, minuteFinish: Int) {
+fun EventCard(
+    eventInfo: EventInfo,
+    navController: NavController
+) {
+    val minuteStart = eventInfo.dateStart.timeInMinutes()
+    val minuteFinish = eventInfo.dateFinish.timeInMinutes()
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 4.dp)
             .offset(y = minuteStart.dp + 30.dp)
             .height((minuteFinish - minuteStart).dp)
+            .padding(start = 4.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .clickable {
+                navController.navigate(
+                   DestinationScreen.DetailScreen.withArgs(eventInfo.id.toString())
+                )
+            }
     ) {
-        Text(
-            text = "$minuteStart - $minuteFinish"
-        )
+        Column{
+            Text(text = eventInfo.name)
+            Text(
+                text = "${eventInfo.dateStart.formatToTime()} - ${eventInfo.dateFinish.formatToTime()}"
+            )
+        }
     }
 }
 
@@ -178,13 +249,5 @@ fun TimeTable() {
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CalendarPreview() {
-    CalendarTheme {
-        CalendarScreen()
     }
 }

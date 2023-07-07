@@ -55,29 +55,36 @@ dependencies {
 
     implementation libs.core.ktx
     implementation libs.lifecycle.runtime.ktx
+    implementation libs.kotlinx.collections.immutable
+
+    // compose region
     implementation libs.activity.compose
     implementation platform(libs.compose.bom)
+    implementation libs.material3
     implementation libs.ui
     implementation libs.ui.graphics
     implementation libs.ui.tooling.preview
-    implementation libs.material3
     debugImplementation libs.ui.tooling
     debugImplementation libs.ui.test.manifest
+    implementation libs.androidx.lifecycle.runtime.compose
+    implementation libs.androidx.lifecycle.viewmodel.compose
+    implementation libs.material.dialogs
+    implementation libs.navigation.compose
+    // end region
 
-    // data region
+    // room region
     implementation libs.room.runtime
     ksp libs.room.compiler
     implementation libs.room.ktx
+    // end region
+
+    // gson converter region
     implementation libs.gson
     // end region
 
-    // di region
-    implementation libs.hilt.android
-    ksp libs.hilt.compiler
+    // koin region
+    implementation libs.koin.core
+    implementation libs.koin.android
+    implementation libs.koin.android.compose
     // end region
-
-    // dialogs region
-    implementation libs.material.dialogs
-    // end region
-
 }
