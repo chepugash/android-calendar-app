@@ -57,9 +57,9 @@ fun CalendarScreen(
     val state = viewModel.state.collectAsStateWithLifecycle()
     val action by viewModel.action.collectAsStateWithLifecycle(null)
 
-    CalendarContent(viewState = state.value,
-        effectHandler = viewModel::effect,
-        navController
+    CalendarContent(
+        viewState = state.value,
+        effectHandler = viewModel::effect
     )
 
     CalendarScreenActions(
@@ -72,7 +72,6 @@ fun CalendarScreen(
 fun CalendarContent(
     viewState: CalendarState,
     effectHandler: (CalendarEffect) -> Unit,
-    navController: NavController
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
@@ -231,8 +230,7 @@ fun HoursList() {
     ) {
         items(24) { index ->
             Box(
-                modifier = Modifier
-                    .height(60.dp)
+                modifier = Modifier.height(60.dp)
             ) {
                 val formattedIndex = if (index < 10) {
                     "0$index:00"
@@ -241,8 +239,7 @@ fun HoursList() {
                 }
                 Text(
                     text = formattedIndex,
-                    modifier = Modifier
-                        .align(Alignment.CenterStart)
+                    modifier = Modifier.align(Alignment.CenterStart)
                 )
             }
         }
