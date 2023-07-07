@@ -2,7 +2,6 @@
 
 package com.practice.calendar.ui.calendar
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,9 +25,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,8 +34,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.practice.calendar.R
 import com.practice.calendar.domain.entity.EventInfo
+import com.practice.calendar.ui.navigation.DestinationScreen
 import com.practice.calendar.ui.theme.CalendarTheme
 import com.practice.calendar.util.formatToDate
 import com.practice.calendar.util.formatToTime
@@ -51,13 +49,17 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CalendarScreen(
-    viewModel: CalendarViewModel = koinViewModel()
+    viewModel: CalendarViewModel = koinViewModel(),
+    navController: NavController
 ) {
 
     val state = viewModel.state.collectAsStateWithLifecycle()
     val action by viewModel.action.collectAsStateWithLifecycle(null)
 
-    CalendarContent(viewState = state.value, eventHandler = viewModel::effect)
+    CalendarContent(viewState = state.value,
+        effectHandler = viewModel::effect,
+        navController
+    )
 
     CalendarScreenActions()
 }
@@ -65,14 +67,15 @@ fun CalendarScreen(
 @Composable
 fun CalendarContent(
     viewState: CalendarState,
-    eventHandler: (CalendarEffect) -> Unit
+    effectHandler: (CalendarEffect) -> Unit,
+    navController: NavController
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         CalendarToolbar(
             viewState = viewState,
-            eventHandler = eventHandler
+            effectHandler = effectHandler
         )
         Row(
             modifier = Modifier
@@ -84,7 +87,7 @@ fun CalendarContent(
             HoursList()
             Box {
                 TimeTable()
-                EventList(viewState = viewState)
+                EventList(viewState = viewState, navController = navController)
             }
         }
     }
@@ -95,12 +98,12 @@ private fun CalendarScreenActions() {}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CalendarToolbar(viewState: CalendarState, eventHandler: (CalendarEffect) -> Unit) {
+fun CalendarToolbar(viewState: CalendarState, effectHandler: (CalendarEffect) -> Unit) {
     TopAppBar(
         title = {
             DatePicker(
                 viewState = viewState,
-                eventHandler = eventHandler
+                effectHandler = effectHandler
             )
         },
         navigationIcon = {
@@ -116,12 +119,12 @@ fun CalendarToolbar(viewState: CalendarState, eventHandler: (CalendarEffect) -> 
 @Composable
 fun DatePicker(
     viewState: CalendarState,
-    eventHandler: (CalendarEffect) -> Unit
+    effectHandler: (CalendarEffect) -> Unit
 ) {
     val dateDialogState = rememberMaterialDialogState()
     Row {
         TextButton(onClick = {
-            eventHandler.invoke(CalendarEffect.OnDateClick)
+            effectHandler.invoke(CalendarEffect.OnDateClick)
         }) {
             Text(
                 text = viewState.date.formatToDate(),
@@ -135,11 +138,11 @@ fun DatePicker(
         buttons = {
             positiveButton(text = "ок")
             negativeButton(text = "закрыть") {
-                eventHandler.invoke(CalendarEffect.OnCloseDialog)
+                effectHandler.invoke(CalendarEffect.OnCloseDialog)
             }
         },
         onCloseRequest = {
-            eventHandler.invoke(CalendarEffect.OnCloseDialog)
+            effectHandler.invoke(CalendarEffect.OnCloseDialog)
         },
         autoDismiss = false
     ) {
@@ -147,7 +150,7 @@ fun DatePicker(
             initialDate = viewState.date,
             title = "Pick a date",
         ) {
-            eventHandler.invoke(CalendarEffect.OnConfirmDialog(it))
+            effectHandler.invoke(CalendarEffect.OnConfirmDialog(it))
         }
     }
     if (viewState.showDialog) { dateDialogState.show() } else { dateDialogState.hide() }
@@ -156,21 +159,26 @@ fun DatePicker(
 @Composable
 fun EventList(
     viewState: CalendarState,
+    navController: NavController
 ) {
-    if (viewState.eventInfoList != null) {
+    val events = viewState.eventInfoList
+    if (events != null) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            repeat(viewState.eventInfoList.size) {index ->
-                EventCard(viewState.eventInfoList[index])
+            repeat(events.size) {index ->
+                EventCard(events[index], navController)
             }
         }
     }
 }
 
 @Composable
-fun EventCard(eventInfo: EventInfo) {
+fun EventCard(
+    eventInfo: EventInfo,
+    navController: NavController
+) {
     val minuteStart = eventInfo.dateStart.timeInMinutes()
     val minuteFinish = eventInfo.dateFinish.timeInMinutes()
     Card(
@@ -180,7 +188,11 @@ fun EventCard(eventInfo: EventInfo) {
             .height((minuteFinish - minuteStart).dp)
             .padding(start = 4.dp)
             .clip(RoundedCornerShape(12.dp))
-            .clickable { }
+            .clickable {
+                navController.navigate(
+                   DestinationScreen.DetailScreen.withArgs(eventInfo.id.toString())
+                )
+            }
     ) {
         Column{
             Text(text = eventInfo.name)
@@ -237,13 +249,5 @@ fun TimeTable() {
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun CalendarPreview() {
-    CalendarTheme {
-        CalendarScreen()
     }
 }

@@ -66,7 +66,6 @@ class CalendarViewModel(
                 )
             )
             getEvents(state.value.date)
-            Log.e("AAAAA", state.value.showDialog.toString())
         }
     }
 
@@ -77,7 +76,6 @@ class CalendarViewModel(
                     showDialog = false,
                 )
             )
-            Log.e("AAAAA", state.value.showDialog.toString())
         }
     }
 
@@ -88,7 +86,6 @@ class CalendarViewModel(
                     showDialog = true
                 )
             )
-            Log.e("AAAAA", state.value.date.formatToDate())
         }
     }
 }

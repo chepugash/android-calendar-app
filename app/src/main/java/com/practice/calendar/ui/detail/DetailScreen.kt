@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.practice.calendar.R
 import com.practice.calendar.domain.entity.EventInfo
 import com.practice.calendar.ui.theme.CalendarTheme
@@ -31,31 +32,33 @@ import java.time.LocalDateTime
 
 @Composable
 fun DetailScreen(
-    eventInfo: EventInfo
+    eventId: Long,
+    navController: NavController
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        DetailToolbar(title = eventInfo.name)
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
-            EventTitle(title = eventInfo.name)
-            Spacer(modifier = Modifier.padding(8.dp))
-            EventTime(
-                start = eventInfo.dateStart.formatToTime(),
-                finish = eventInfo.dateFinish.formatToTime()
-            )
-            Spacer(modifier = Modifier.padding(8.dp))
-            EventDate(
-                date = eventInfo.dateStart.formatToDate()
-            )
-            Spacer(modifier = Modifier.padding(8.dp))
-            EventDescription(desc = eventInfo.description)
-        }
+        Text(text = "hello detail")
+//        DetailToolbar(title = eventInfo.name)
+//        Column(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .padding(16.dp)
+//        ) {
+//            EventTitle(title = eventInfo.name)
+//            Spacer(modifier = Modifier.padding(8.dp))
+//            EventTime(
+//                start = eventInfo.dateStart.formatToTime(),
+//                finish = eventInfo.dateFinish.formatToTime()
+//            )
+//            Spacer(modifier = Modifier.padding(8.dp))
+//            EventDate(
+//                date = eventInfo.dateStart.formatToDate()
+//            )
+//            Spacer(modifier = Modifier.padding(8.dp))
+//            EventDescription(desc = eventInfo.description)
+//        }
     }
 }
 
@@ -153,9 +156,9 @@ fun EventDescription(desc: String) {
 
 @Preview(showBackground = true)
 @Composable
-fun DetailPreview() {
+private fun DetailPreview() {
     CalendarTheme {
-        DetailScreen(event)
+//        DetailScreen(event)
     }
 }
 
