@@ -2,6 +2,8 @@
 
 package com.practice.calendar.ui.calendar
 
+import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
@@ -28,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,7 +48,6 @@ import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import org.koin.androidx.compose.koinViewModel
-import java.time.LocalDate
 
 @Composable
 fun CalendarScreen(
@@ -54,7 +57,7 @@ fun CalendarScreen(
     val state = viewModel.state.collectAsStateWithLifecycle()
     val action by viewModel.action.collectAsStateWithLifecycle(null)
 
-    CalendarContent(viewState = state.value,)
+    CalendarContent(viewState = state.value, eventHandler = viewModel::effect)
 
     CalendarScreenActions()
 }
@@ -62,11 +65,15 @@ fun CalendarScreen(
 @Composable
 fun CalendarContent(
     viewState: CalendarState,
+    eventHandler: (CalendarEffect) -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        CalendarToolbar()
+        CalendarToolbar(
+            viewState = viewState,
+            eventHandler = eventHandler
+        )
         Row(
             modifier = Modifier
                 .fillMaxSize()
@@ -88,10 +95,13 @@ private fun CalendarScreenActions() {}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CalendarToolbar() {
+fun CalendarToolbar(viewState: CalendarState, eventHandler: (CalendarEffect) -> Unit) {
     TopAppBar(
         title = {
-            DatePicker()
+            DatePicker(
+                viewState = viewState,
+                eventHandler = eventHandler
+            )
         },
         navigationIcon = {
             Icon(
@@ -99,22 +109,22 @@ fun CalendarToolbar() {
                 contentDescription = "toolbar calendar icon",
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp)
             )
-        },
+        }
     )
 }
 
 @Composable
-fun DatePicker() {
-    var pickedDate by remember {
-        mutableStateOf(LocalDate.now())
-    }
+fun DatePicker(
+    viewState: CalendarState,
+    eventHandler: (CalendarEffect) -> Unit
+) {
     val dateDialogState = rememberMaterialDialogState()
     Row {
         TextButton(onClick = {
-            dateDialogState.show()
+            eventHandler.invoke(CalendarEffect.OnDateClick)
         }) {
             Text(
-                text = pickedDate.formatToDate(),
+                text = viewState.date.formatToDate(),
                 fontSize = 24.sp,
                 color = Color.Blue
             )
@@ -123,17 +133,24 @@ fun DatePicker() {
     MaterialDialog(
         dialogState = dateDialogState,
         buttons = {
-            positiveButton(text = "Ok")
-            negativeButton(text = "Cancel")
-        }
+            positiveButton(text = "ок")
+            negativeButton(text = "закрыть") {
+                eventHandler.invoke(CalendarEffect.OnCloseDialog)
+            }
+        },
+        onCloseRequest = {
+            eventHandler.invoke(CalendarEffect.OnCloseDialog)
+        },
+        autoDismiss = false
     ) {
         datepicker(
-            initialDate = LocalDate.now(),
-            title = "Pick a date"
+            initialDate = viewState.date,
+            title = "Pick a date",
         ) {
-            pickedDate = it
+            eventHandler.invoke(CalendarEffect.OnConfirmDialog(it))
         }
     }
+    if (viewState.showDialog) { dateDialogState.show() } else { dateDialogState.hide() }
 }
 
 @Composable
@@ -159,11 +176,13 @@ fun EventCard(eventInfo: EventInfo) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 4.dp)
             .offset(y = minuteStart.dp + 30.dp)
             .height((minuteFinish - minuteStart).dp)
+            .padding(start = 4.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .clickable { }
     ) {
-        Column {
+        Column{
             Text(text = eventInfo.name)
             Text(
                 text = "${eventInfo.dateStart.formatToTime()} - ${eventInfo.dateFinish.formatToTime()}"
@@ -225,6 +244,6 @@ fun TimeTable() {
 @Composable
 private fun CalendarPreview() {
     CalendarTheme {
-//        CalendarScreen()
+        CalendarScreen()
     }
 }

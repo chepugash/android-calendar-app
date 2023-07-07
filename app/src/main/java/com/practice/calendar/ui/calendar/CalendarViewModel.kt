@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practice.calendar.domain.usecase.GetEventsUseCase
 import com.practice.calendar.domain.usecase.UpdateEventsFromRemoteUseCase
+import com.practice.calendar.util.formatToDate
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -31,14 +32,18 @@ class CalendarViewModel(
         get() = _action.asSharedFlow()
 
     fun effect(calendarEffect: CalendarEffect) {
-
+        when(calendarEffect) {
+            CalendarEffect.OnDateClick -> onDateClick()
+            is CalendarEffect.OnConfirmDialog -> onConfirmDialog(calendarEffect)
+            CalendarEffect.OnCloseDialog -> onCloseDialog()
+        }
     }
 
     init {
-        getEvents(LocalDate.parse("2023-07-04"))
+        getEvents(LocalDate.now())
     }
 
-    fun getEvents(date: LocalDate) {
+    private fun getEvents(date: LocalDate) {
         viewModelScope.launch {
             updateEventsFromRemoteUseCase()
             getEventsUseCase(date)
@@ -49,6 +54,41 @@ class CalendarViewModel(
                         )
                     )
                 }
+        }
+    }
+
+    private fun onConfirmDialog(effect: CalendarEffect.OnConfirmDialog) {
+        viewModelScope.launch {
+            _state.emit(
+                _state.value.copy(
+                    showDialog = false,
+                    date = effect.date
+                )
+            )
+            getEvents(state.value.date)
+            Log.e("AAAAA", state.value.showDialog.toString())
+        }
+    }
+
+    private fun onCloseDialog() {
+        viewModelScope.launch {
+            _state.emit(
+                _state.value.copy(
+                    showDialog = false,
+                )
+            )
+            Log.e("AAAAA", state.value.showDialog.toString())
+        }
+    }
+
+    private fun onDateClick() {
+        viewModelScope.launch {
+            _state.emit(
+                _state.value.copy(
+                    showDialog = true
+                )
+            )
+            Log.e("AAAAA", state.value.date.formatToDate())
         }
     }
 }
