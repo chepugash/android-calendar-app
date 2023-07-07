@@ -1,20 +1,16 @@
 package com.practice.calendar.ui.calendar
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practice.calendar.domain.usecase.GetEventsUseCase
 import com.practice.calendar.domain.usecase.UpdateEventsFromRemoteUseCase
-import com.practice.calendar.util.formatToDate
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -32,7 +28,7 @@ class CalendarViewModel(
         get() = _action.asSharedFlow()
 
     fun effect(calendarEffect: CalendarEffect) {
-        when(calendarEffect) {
+        when (calendarEffect) {
             CalendarEffect.OnDateClick -> onDateClick()
             is CalendarEffect.OnConfirmDialog -> onConfirmDialog(calendarEffect)
             CalendarEffect.OnCloseDialog -> onCloseDialog()
@@ -47,14 +43,13 @@ class CalendarViewModel(
     private fun getEvents(date: LocalDate) {
         viewModelScope.launch {
             updateEventsFromRemoteUseCase()
-            getEventsUseCase(date)
-                .collect { list ->
-                    _state.emit(
-                        _state.value.copy(
-                            eventInfoList = list?.toPersistentList()
-                        )
+            getEventsUseCase(date).collect { list ->
+                _state.emit(
+                    _state.value.copy(
+                        eventInfoList = list?.toPersistentList()
                     )
-                }
+                )
+            }
         }
     }
 

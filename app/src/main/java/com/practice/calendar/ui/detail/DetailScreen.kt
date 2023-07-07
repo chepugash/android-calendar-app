@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -22,43 +23,66 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.practice.calendar.R
 import com.practice.calendar.domain.entity.EventInfo
+import com.practice.calendar.ui.calendar.CalendarContent
 import com.practice.calendar.ui.theme.CalendarTheme
 import com.practice.calendar.util.formatToDate
 import com.practice.calendar.util.formatToTime
+import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDateTime
 
 @Composable
 fun DetailScreen(
     eventId: Long,
+    viewModel: DetailViewModel = koinViewModel(),
     navController: NavController
 ) {
+
+    val state = viewModel.state.collectAsStateWithLifecycle()
+    val action by viewModel.action.collectAsStateWithLifecycle(null)
+
+    DetailContent(
+        eventId = eventId,
+        viewState = state.value,
+        effectHandler = viewModel::effect
+    )
+}
+
+@Composable
+fun DetailContent(
+    eventId: Long,
+    viewState: DetailState,
+    effectHandler: (DetailEffect) -> Unit
+) {
+    effectHandler.invoke(DetailEffect.ShowEvent(eventId))
     Column(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
-        Text(text = "hello detail")
-//        DetailToolbar(title = eventInfo.name)
-//        Column(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .padding(16.dp)
-//        ) {
-//            EventTitle(title = eventInfo.name)
-//            Spacer(modifier = Modifier.padding(8.dp))
-//            EventTime(
-//                start = eventInfo.dateStart.formatToTime(),
-//                finish = eventInfo.dateFinish.formatToTime()
-//            )
-//            Spacer(modifier = Modifier.padding(8.dp))
-//            EventDate(
-//                date = eventInfo.dateStart.formatToDate()
-//            )
-//            Spacer(modifier = Modifier.padding(8.dp))
-//            EventDescription(desc = eventInfo.description)
-//        }
+        val info = viewState.eventInfo
+        if (info != null) {
+            DetailToolbar(title = info.name)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                EventTitle(title = info.name)
+                Spacer(modifier = Modifier.padding(8.dp))
+                EventTime(
+                    start = info.dateStart.formatToTime(),
+                    finish = info.dateFinish.formatToTime()
+                )
+                Spacer(modifier = Modifier.padding(8.dp))
+                EventDate(
+                    date = info.dateStart.formatToDate()
+                )
+                Spacer(modifier = Modifier.padding(8.dp))
+                EventDescription(desc = info.description)
+            }
+        }
     }
 }
 
@@ -85,8 +109,7 @@ fun DetailToolbar(title: String) {
 @Composable
 fun EventTitle(title: String) {
     Box(
-        modifier = Modifier
-            .wrapContentSize()
+        modifier = Modifier.wrapContentSize()
     ) {
         Text(
             text = title,
@@ -150,22 +173,7 @@ fun EventDescription(desc: String) {
     Box {
         Text(
             text = desc,
-            fontSize = 18.sp)
+            fontSize = 18.sp
+        )
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-private fun DetailPreview() {
-    CalendarTheme {
-//        DetailScreen(event)
-    }
-}
-
-val event: EventInfo = EventInfo(
-    id = 1,
-    dateStart = LocalDateTime.now(),
-    dateFinish = LocalDateTime.now(),
-    name = "test name",
-    description = "test description"
-)

@@ -71,7 +71,7 @@ fun CalendarScreen(
 @Composable
 fun CalendarContent(
     viewState: CalendarState,
-    effectHandler: (CalendarEffect) -> Unit,
+    effectHandler: (CalendarEffect) -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize()

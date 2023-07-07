@@ -1,8 +1,11 @@
 package com.practice.calendar.di
 
+import com.practice.calendar.domain.usecase.GetEventUseCase
 import com.practice.calendar.domain.usecase.GetEventsUseCase
 import com.practice.calendar.domain.usecase.UpdateEventsFromRemoteUseCase
 import com.practice.calendar.ui.calendar.CalendarViewModel
+import com.practice.calendar.ui.detail.DetailViewModel
+import com.practice.calendar.ui.detail.event
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -16,6 +19,10 @@ val appModule = module {
         UpdateEventsFromRemoteUseCase(eventRepository = get())
     }
 
+    factory<GetEventUseCase> {
+        GetEventUseCase(eventRepository = get())
+    }
+
     viewModel<CalendarViewModel> {
         CalendarViewModel(
             getEventsUseCase = get(),
@@ -23,4 +30,9 @@ val appModule = module {
         )
     }
 
+    viewModel<DetailViewModel> {
+        DetailViewModel(
+            getEventUseCase = get()
+        )
+    }
 }
