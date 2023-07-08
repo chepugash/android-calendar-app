@@ -1,9 +1,10 @@
 @file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 
-package com.practice.calendar.ui.calendar
+package com.practice.calendar.ui.screen.calendar
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,16 +15,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,19 +60,21 @@ fun CalendarScreen(
     val state = viewModel.state.collectAsStateWithLifecycle()
     val action by viewModel.action.collectAsStateWithLifecycle(null)
 
-    CalendarContent(viewState = state.value,
-        effectHandler = viewModel::effect,
-        navController
+    CalendarContent(
+        viewState = state.value,
+        effectHandler = viewModel::effect
     )
 
-    CalendarScreenActions()
+    CalendarScreenActions(
+        navController = navController,
+        viewAction = action,
+    )
 }
 
 @Composable
 fun CalendarContent(
     viewState: CalendarState,
-    effectHandler: (CalendarEffect) -> Unit,
-    navController: NavController
+    effectHandler: (CalendarEffect) -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
@@ -77,24 +83,64 @@ fun CalendarContent(
             viewState = viewState,
             effectHandler = effectHandler
         )
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(start = 16.dp, end = 16.dp)
-                .height(1440.dp + 30.dp)
-                .verticalScroll(rememberScrollState())
-        ) {
-            HoursList()
-            Box {
-                TimeTable()
-                EventList(viewState = viewState, navController = navController)
+        Box(modifier = Modifier.fillMaxSize()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 16.dp, end = 16.dp)
+                    .height(1440.dp + 30.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                HoursList()
+                Box {
+                    TimeTable()
+                    EventList(viewState = viewState, effectHandler = effectHandler)
+                }
+            }
+            AddButton(effectHandler = effectHandler)
+        }
+    }
+}
+
+@Composable
+private fun CalendarScreenActions(
+    navController: NavController,
+    viewAction: CalendarAction?,
+) {
+    LaunchedEffect(viewAction) {
+        when (viewAction) {
+            null -> Unit
+            is CalendarAction.NavigateDetail -> {
+                navController.navigate(
+                    DestinationScreen.DetailScreen.withArgs(viewAction.eventId.toString())
+                )
+            }
+            CalendarAction.NavigateAddEvent -> {
+                navController.navigate(DestinationScreen.NewEventScreen.route)
             }
         }
     }
 }
 
 @Composable
-private fun CalendarScreenActions() {}
+fun AddButton(effectHandler: (CalendarEffect) -> Unit) {
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        FloatingActionButton(
+            onClick = {
+                effectHandler.invoke(CalendarEffect.OnAddEventClick)
+            },
+            shape = CircleShape,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+        ) {
+            Icon(
+                painterResource(id = R.drawable.ic_add),
+                contentDescription = "add button icon"
+            )
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -159,7 +205,7 @@ fun DatePicker(
 @Composable
 fun EventList(
     viewState: CalendarState,
-    navController: NavController
+    effectHandler: (CalendarEffect) -> Unit
 ) {
     val events = viewState.eventInfoList
     if (events != null) {
@@ -168,7 +214,12 @@ fun EventList(
                 .fillMaxSize()
         ) {
             repeat(events.size) {index ->
-                EventCard(events[index], navController)
+                EventCard(
+                    eventInfo = events[index],
+                    onCLick = {
+                        effectHandler.invoke(CalendarEffect.OnEventClick(events[index].id))
+                    }
+                )
             }
         }
     }
@@ -177,7 +228,7 @@ fun EventList(
 @Composable
 fun EventCard(
     eventInfo: EventInfo,
-    navController: NavController
+    onCLick: (Long) -> Unit
 ) {
     val minuteStart = eventInfo.dateStart.timeInMinutes()
     val minuteFinish = eventInfo.dateFinish.timeInMinutes()
@@ -188,11 +239,7 @@ fun EventCard(
             .height((minuteFinish - minuteStart).dp)
             .padding(start = 4.dp)
             .clip(RoundedCornerShape(12.dp))
-            .clickable {
-                navController.navigate(
-                   DestinationScreen.DetailScreen.withArgs(eventInfo.id.toString())
-                )
-            }
+            .clickable { onCLick.invoke(eventInfo.id) }
     ) {
         Column{
             Text(text = eventInfo.name)
@@ -212,8 +259,7 @@ fun HoursList() {
     ) {
         items(24) { index ->
             Box(
-                modifier = Modifier
-                    .height(60.dp)
+                modifier = Modifier.height(60.dp)
             ) {
                 val formattedIndex = if (index < 10) {
                     "0$index:00"
@@ -222,8 +268,7 @@ fun HoursList() {
                 }
                 Text(
                     text = formattedIndex,
-                    modifier = Modifier
-                        .align(Alignment.CenterStart)
+                    modifier = Modifier.align(Alignment.CenterStart)
                 )
             }
         }

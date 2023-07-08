@@ -9,4 +9,10 @@ interface EventRepository {
     fun getEventsByDate(date: LocalDate): Flow<List<EventInfo>?>
 
     suspend fun updateEventsFromRemote()
+
+    fun getEventById(eventId: Long): Flow<EventInfo?>
+
+    suspend fun createEvent(eventInfo: EventInfo): Long
+
+    suspend fun deleteEvent(eventId: Long)
 }

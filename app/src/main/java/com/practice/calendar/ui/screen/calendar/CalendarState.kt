@@ -1,4 +1,4 @@
-package com.practice.calendar.ui.calendar
+package com.practice.calendar.ui.screen.calendar
 
 import androidx.compose.runtime.Immutable
 import com.practice.calendar.domain.entity.EventInfo

@@ -34,7 +34,11 @@ fun EventDbEntity.toEventInfo(): EventInfo = EventInfo(
     description = description
 )
 
-fun Flow<List<EventDbEntity>?>.toEventInfoFlow(): Flow<List<EventInfo>?> {
+fun Flow<EventDbEntity?>.toEventInfoFlow(): Flow<EventInfo?> = map {
+    it?.toEventInfo()
+}
+
+fun Flow<List<EventDbEntity>?>.toEventInfoListFlow(): Flow<List<EventInfo>?> {
     return this.map {list ->
         list?.map { entity -> entity.toEventInfo() }
     }

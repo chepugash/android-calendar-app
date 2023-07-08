@@ -1,4 +1,4 @@
-package com.practice.calendar.ui.detail
+package com.practice.calendar.ui.screen.detail
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,9 +12,12 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -22,49 +25,105 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.practice.calendar.R
 import com.practice.calendar.domain.entity.EventInfo
+import com.practice.calendar.ui.navigation.DestinationScreen
+import com.practice.calendar.ui.screen.calendar.CalendarContent
 import com.practice.calendar.ui.theme.CalendarTheme
 import com.practice.calendar.util.formatToDate
 import com.practice.calendar.util.formatToTime
+import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDateTime
 
 @Composable
 fun DetailScreen(
     eventId: Long,
+    viewModel: DetailViewModel = koinViewModel(),
     navController: NavController
 ) {
+
+    val state = viewModel.state.collectAsStateWithLifecycle()
+    val action by viewModel.action.collectAsStateWithLifecycle(null)
+
+    DetailContent(
+        eventId = eventId,
+        viewState = state.value,
+        effectHandler = viewModel::effect
+    )
+
+    DetailScreenActions(
+        navController = navController,
+        viewAction = action
+    )
+}
+
+@Composable
+private fun DetailScreenActions(
+    navController: NavController,
+    viewAction: DetailAction?
+) {
+    LaunchedEffect(viewAction) {
+        when (viewAction) {
+            null -> Unit
+            DetailAction.NavigateToCalendar -> {
+                navController.navigate(
+                    DestinationScreen.CalendarScreen.route
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DetailContent(
+    eventId: Long,
+    viewState: DetailState,
+    effectHandler: (DetailEffect) -> Unit
+) {
+    LaunchedEffect(effectHandler) {
+        effectHandler.invoke(DetailEffect.ShowEvent(eventId))
+    }
     Column(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
-        Text(text = "hello detail")
-//        DetailToolbar(title = eventInfo.name)
-//        Column(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .padding(16.dp)
-//        ) {
-//            EventTitle(title = eventInfo.name)
-//            Spacer(modifier = Modifier.padding(8.dp))
-//            EventTime(
-//                start = eventInfo.dateStart.formatToTime(),
-//                finish = eventInfo.dateFinish.formatToTime()
-//            )
-//            Spacer(modifier = Modifier.padding(8.dp))
-//            EventDate(
-//                date = eventInfo.dateStart.formatToDate()
-//            )
-//            Spacer(modifier = Modifier.padding(8.dp))
-//            EventDescription(desc = eventInfo.description)
-//        }
+        val info = viewState.eventInfo
+        if (info != null) {
+            DetailToolbar(
+                eventId = info.id,
+                title = info.name,
+                effectHandler = effectHandler
+            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                EventTitle(title = info.name)
+                Spacer(modifier = Modifier.padding(8.dp))
+                EventTime(
+                    start = info.dateStart.formatToTime(),
+                    finish = info.dateFinish.formatToTime()
+                )
+                Spacer(modifier = Modifier.padding(8.dp))
+                EventDate(
+                    date = info.dateStart.formatToDate()
+                )
+                Spacer(modifier = Modifier.padding(8.dp))
+                EventDescription(desc = info.description)
+            }
+        }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailToolbar(title: String) {
+fun DetailToolbar(
+    eventId: Long,
+    title: String,
+    effectHandler: (DetailEffect) -> Unit
+) {
     TopAppBar(
         title = {
             Text(
@@ -75,18 +134,29 @@ fun DetailToolbar(title: String) {
         navigationIcon = {
             Icon(
                 painterResource(id = R.drawable.ic_back),
-                contentDescription = "toolbar back icon",
+                contentDescription = "detail toolbar back icon",
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp)
             )
         },
+        actions = {
+            IconButton(
+                onClick = {
+                    effectHandler.invoke(DetailEffect.OnDeleteClick(eventId))
+                }
+            ) {
+                Icon(
+                    painterResource(id = R.drawable.ic_delete),
+                    contentDescription = "detail toolbar delete icon",
+                )
+            }
+        }
     )
 }
 
 @Composable
 fun EventTitle(title: String) {
     Box(
-        modifier = Modifier
-            .wrapContentSize()
+        modifier = Modifier.wrapContentSize()
     ) {
         Text(
             text = title,
@@ -150,22 +220,7 @@ fun EventDescription(desc: String) {
     Box {
         Text(
             text = desc,
-            fontSize = 18.sp)
+            fontSize = 18.sp
+        )
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-private fun DetailPreview() {
-    CalendarTheme {
-//        DetailScreen(event)
-    }
-}
-
-val event: EventInfo = EventInfo(
-    id = 1,
-    dateStart = LocalDateTime.now(),
-    dateFinish = LocalDateTime.now(),
-    name = "test name",
-    description = "test description"
-)

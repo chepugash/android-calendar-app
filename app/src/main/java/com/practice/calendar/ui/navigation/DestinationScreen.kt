@@ -6,6 +6,8 @@ sealed class DestinationScreen(val route: String) {
 
     object DetailScreen : DestinationScreen(route = "detail_screen")
 
+    object NewEventScreen : DestinationScreen(route = "new_event_screen")
+
     fun withArgs(vararg args: String): String {
         return buildString {
             append(route)
