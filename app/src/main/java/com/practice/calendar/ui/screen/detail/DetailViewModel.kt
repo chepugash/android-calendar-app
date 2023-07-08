@@ -25,7 +25,7 @@ class DetailViewModel(
 
     fun effect(detailEffect: DetailEffect) {
         when(detailEffect) {
-            is DetailEffect.ShowEvent -> showEvent(detailEffect.eventId)
+            is DetailEffect.ShowEvent -> getEvent(detailEffect.eventId)
         }
     }
 
@@ -38,12 +38,6 @@ class DetailViewModel(
                     )
                 )
             }
-        }
-    }
-
-    private fun showEvent(eventId: Long) {
-        viewModelScope.launch {
-            getEvent(eventId)
         }
     }
 }

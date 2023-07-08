@@ -37,6 +37,8 @@ val appModule = module {
     }
 
     viewModel<NewEventViewModel> {
-        NewEventViewModel()
+        NewEventViewModel(
+            getEventUseCase = get()
+        )
     }
 }
