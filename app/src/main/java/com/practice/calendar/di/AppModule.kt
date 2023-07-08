@@ -3,9 +3,9 @@ package com.practice.calendar.di
 import com.practice.calendar.domain.usecase.GetEventUseCase
 import com.practice.calendar.domain.usecase.GetEventsUseCase
 import com.practice.calendar.domain.usecase.UpdateEventsFromRemoteUseCase
-import com.practice.calendar.ui.calendar.CalendarViewModel
-import com.practice.calendar.ui.detail.DetailViewModel
-import com.practice.calendar.ui.detail.event
+import com.practice.calendar.ui.screen.calendar.CalendarViewModel
+import com.practice.calendar.ui.screen.detail.DetailViewModel
+import com.practice.calendar.ui.screen.newevent.NewEventViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -34,5 +34,9 @@ val appModule = module {
         DetailViewModel(
             getEventUseCase = get()
         )
+    }
+
+    viewModel<NewEventViewModel> {
+        NewEventViewModel()
     }
 }

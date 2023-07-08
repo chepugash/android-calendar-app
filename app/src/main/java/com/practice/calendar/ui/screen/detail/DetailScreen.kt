@@ -1,4 +1,4 @@
-package com.practice.calendar.ui.detail
+package com.practice.calendar.ui.screen.detail
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,7 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.practice.calendar.R
 import com.practice.calendar.domain.entity.EventInfo
-import com.practice.calendar.ui.calendar.CalendarContent
+import com.practice.calendar.ui.screen.calendar.CalendarContent
 import com.practice.calendar.ui.theme.CalendarTheme
 import com.practice.calendar.util.formatToDate
 import com.practice.calendar.util.formatToTime

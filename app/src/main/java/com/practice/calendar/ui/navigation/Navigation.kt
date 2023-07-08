@@ -6,8 +6,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.practice.calendar.ui.calendar.CalendarScreen
-import com.practice.calendar.ui.detail.DetailScreen
+import com.practice.calendar.ui.screen.calendar.CalendarScreen
+import com.practice.calendar.ui.screen.detail.DetailScreen
+import com.practice.calendar.ui.screen.newevent.NewEventScreen
 
 @Composable
 fun Navigation() {
@@ -36,6 +37,10 @@ fun Navigation() {
             entry.arguments?.getLong("id")?.let {
                 DetailScreen(eventId = it, navController = navController)
             }
+        }
+
+        composable(route = DestinationScreen.NewEventScreen.route) {
+            NewEventScreen()
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.practice.calendar.ui.detail
+package com.practice.calendar.ui.screen.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -1,9 +1,10 @@
 @file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 
-package com.practice.calendar.ui.calendar
+package com.practice.calendar.ui.screen.calendar
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,11 +15,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -80,18 +83,21 @@ fun CalendarContent(
             viewState = viewState,
             effectHandler = effectHandler
         )
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(start = 16.dp, end = 16.dp)
-                .height(1440.dp + 30.dp)
-                .verticalScroll(rememberScrollState())
-        ) {
-            HoursList()
-            Box {
-                TimeTable()
-                EventList(viewState = viewState, effectHandler = effectHandler)
+        Box(modifier = Modifier.fillMaxSize()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 16.dp, end = 16.dp)
+                    .height(1440.dp + 30.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                HoursList()
+                Box {
+                    TimeTable()
+                    EventList(viewState = viewState, effectHandler = effectHandler)
+                }
             }
+            AddButton(effectHandler = effectHandler)
         }
     }
 }
@@ -109,6 +115,29 @@ private fun CalendarScreenActions(
                     DestinationScreen.DetailScreen.withArgs(viewAction.eventId.toString())
                 )
             }
+            CalendarAction.NavigateAddEvent -> {
+                navController.navigate(DestinationScreen.NewEventScreen.route)
+            }
+        }
+    }
+}
+
+@Composable
+fun AddButton(effectHandler: (CalendarEffect) -> Unit) {
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        FloatingActionButton(
+            onClick = {
+                effectHandler.invoke(CalendarEffect.OnAddEventClick)
+            },
+            shape = CircleShape,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+        ) {
+            Icon(
+                painterResource(id = R.drawable.ic_add),
+                contentDescription = "add button icon"
+            )
         }
     }
 }

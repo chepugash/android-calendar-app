@@ -1,4 +1,4 @@
-package com.practice.calendar.ui.detail
+package com.practice.calendar.ui.screen.detail
 
 sealed interface DetailEffect {
 

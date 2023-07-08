@@ -1,4 +1,4 @@
-package com.practice.calendar.ui.calendar
+package com.practice.calendar.ui.screen.calendar
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -33,11 +33,12 @@ class CalendarViewModel(
             is CalendarEffect.OnConfirmDialog -> onConfirmDialog(calendarEffect)
             CalendarEffect.OnCloseDialog -> onCloseDialog()
             is CalendarEffect.OnEventClick -> onEventClick(calendarEffect.eventId)
+            CalendarEffect.OnAddEventClick -> onAddEventClick()
         }
     }
 
     init {
-        getEvents(LocalDate.now())
+        getEvents(state.value.date)
     }
 
     private fun getEvents(date: LocalDate) {
@@ -89,6 +90,14 @@ class CalendarViewModel(
         viewModelScope.launch {
             _action.emit(
                 CalendarAction.NavigateDetail(eventId = eventId)
+            )
+        }
+    }
+
+    private fun onAddEventClick() {
+        viewModelScope.launch {
+            _action.emit(
+                CalendarAction.NavigateAddEvent
             )
         }
     }
