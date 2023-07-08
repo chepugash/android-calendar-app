@@ -2,6 +2,7 @@ package com.practice.calendar.ui.screen.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.practice.calendar.domain.usecase.DeleteEventUseCase
 import com.practice.calendar.domain.usecase.GetEventUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +13,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class DetailViewModel(
-    private val getEventUseCase: GetEventUseCase
+    private val getEventUseCase: GetEventUseCase,
+    private val deleteEventUseCase: DeleteEventUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<DetailState>(DetailState())
@@ -26,6 +28,7 @@ class DetailViewModel(
     fun effect(detailEffect: DetailEffect) {
         when(detailEffect) {
             is DetailEffect.ShowEvent -> getEvent(detailEffect.eventId)
+            is DetailEffect.OnDeleteClick -> onDeleteClick(detailEffect.eventId)
         }
     }
 
@@ -38,6 +41,15 @@ class DetailViewModel(
                     )
                 )
             }
+        }
+    }
+
+    private fun onDeleteClick(eventId: Long) {
+        viewModelScope.launch {
+            deleteEventUseCase(eventId)
+            _action.emit(
+                DetailAction.NavigateToCalendar
+            )
         }
     }
 }

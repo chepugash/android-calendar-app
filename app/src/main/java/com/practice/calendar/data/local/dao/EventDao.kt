@@ -1,6 +1,7 @@
 package com.practice.calendar.data.local.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -25,6 +26,9 @@ interface EventDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveEvents(events: List<EventDbEntity>)
+
+    @Query("DELETE FROM events WHERE id = :id")
+    suspend fun delete(id: Long)
 
     companion object {
         private const val MILLISECONDS_IN_DAY = 86400000

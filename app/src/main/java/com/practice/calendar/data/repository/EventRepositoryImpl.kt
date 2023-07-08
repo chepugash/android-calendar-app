@@ -34,4 +34,8 @@ class EventRepositoryImpl(
     override suspend fun createEvent(eventInfo: EventInfo): Long {
         return dao.createEvent(eventInfo.toEventDbEntity())
     }
+
+    override suspend fun deleteEvent(eventId: Long) {
+        dao.delete(eventId)
+    }
 }

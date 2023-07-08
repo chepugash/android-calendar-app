@@ -13,4 +13,6 @@ interface EventRepository {
     fun getEventById(eventId: Long): Flow<EventInfo?>
 
     suspend fun createEvent(eventInfo: EventInfo): Long
+
+    suspend fun deleteEvent(eventId: Long)
 }

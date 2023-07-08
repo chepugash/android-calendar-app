@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -28,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.practice.calendar.R
 import com.practice.calendar.domain.entity.EventInfo
+import com.practice.calendar.ui.navigation.DestinationScreen
 import com.practice.calendar.ui.screen.calendar.CalendarContent
 import com.practice.calendar.ui.theme.CalendarTheme
 import com.practice.calendar.util.formatToDate
@@ -50,10 +52,32 @@ fun DetailScreen(
         viewState = state.value,
         effectHandler = viewModel::effect
     )
+
+    DetailScreenActions(
+        navController = navController,
+        viewAction = action
+    )
 }
 
 @Composable
-fun DetailContent(
+private fun DetailScreenActions(
+    navController: NavController,
+    viewAction: DetailAction?
+) {
+    LaunchedEffect(viewAction) {
+        when (viewAction) {
+            null -> Unit
+            DetailAction.NavigateToCalendar -> {
+                navController.navigate(
+                    DestinationScreen.CalendarScreen.route
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DetailContent(
     eventId: Long,
     viewState: DetailState,
     effectHandler: (DetailEffect) -> Unit
@@ -66,7 +90,11 @@ fun DetailContent(
     ) {
         val info = viewState.eventInfo
         if (info != null) {
-            DetailToolbar(title = info.name)
+            DetailToolbar(
+                eventId = info.id,
+                title = info.name,
+                effectHandler = effectHandler
+            )
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -91,7 +119,11 @@ fun DetailContent(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailToolbar(title: String) {
+fun DetailToolbar(
+    eventId: Long,
+    title: String,
+    effectHandler: (DetailEffect) -> Unit
+) {
     TopAppBar(
         title = {
             Text(
@@ -102,10 +134,22 @@ fun DetailToolbar(title: String) {
         navigationIcon = {
             Icon(
                 painterResource(id = R.drawable.ic_back),
-                contentDescription = "toolbar back icon",
+                contentDescription = "detail toolbar back icon",
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp)
             )
         },
+        actions = {
+            IconButton(
+                onClick = {
+                    effectHandler.invoke(DetailEffect.OnDeleteClick(eventId))
+                }
+            ) {
+                Icon(
+                    painterResource(id = R.drawable.ic_delete),
+                    contentDescription = "detail toolbar delete icon",
+                )
+            }
+        }
     )
 }
 
