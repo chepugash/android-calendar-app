@@ -3,6 +3,7 @@ package com.practice.calendar.ui.screen.newevent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practice.calendar.domain.entity.EventInfo
+import com.practice.calendar.domain.usecase.CreateEventUseCase
 import com.practice.calendar.domain.usecase.GetEventUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +17,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 
 class NewEventViewModel(
-    private val getEventUseCase: GetEventUseCase
+    private val createEventUseCase: CreateEventUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<NewEventState>(NewEventState())
@@ -34,6 +35,10 @@ class NewEventViewModel(
             NewEventEffect.OnCloseTimeStartDialog -> onCloseTimeStartDialog()
             NewEventEffect.OnTimeFinishClick -> onTimeFinishClick()
             NewEventEffect.OnTimeStartClick -> onTimeStartClick()
+
+            NewEventEffect.OnConfirmClick -> {
+                onConfirmClick()
+            }
 
             is NewEventEffect.OnConfirmDateDialog -> {
                 onConfirmDateDialog(newEventEffect.date)
@@ -167,6 +172,21 @@ class NewEventViewModel(
                 _state.value.copy(
                     showDateDialog = false
                 )
+            )
+        }
+    }
+
+    private fun onConfirmClick() {
+        viewModelScope.launch {
+            val createdId = createEventUseCase(EventInfo(
+                id = 0,
+                name = state.value.name,
+                dateStart = state.value.date.atTime(state.value.timeStart),
+                dateFinish = state.value.date.atTime(state.value.timeFinish),
+                description = state.value.description
+            ))
+            _action.emit(
+                NewEventAction.NavigateDetail(createdId)
             )
         }
     }

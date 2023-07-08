@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,8 +33,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.practice.calendar.R
 import com.practice.calendar.domain.entity.EventInfo
+import com.practice.calendar.ui.navigation.DestinationScreen
+import com.practice.calendar.ui.screen.calendar.CalendarAction
 import com.practice.calendar.ui.screen.calendar.CalendarEffect
 import com.practice.calendar.ui.theme.CalendarTheme
 import com.practice.calendar.util.formatToDate
@@ -49,7 +53,8 @@ import java.time.LocalTime
 
 @Composable
 fun NewEventScreen(
-    viewModel: NewEventViewModel = koinViewModel()
+    viewModel: NewEventViewModel = koinViewModel(),
+    navController: NavController
 ) {
 
     val state = viewModel.state.collectAsStateWithLifecycle()
@@ -59,6 +64,28 @@ fun NewEventScreen(
         viewState = state.value,
         effectHandler = viewModel::effect
     )
+
+    NewEventScreenActions(
+        navController = navController,
+        viewAction = action
+    )
+}
+
+@Composable
+private fun NewEventScreenActions(
+    navController: NavController,
+    viewAction: NewEventAction?,
+) {
+    LaunchedEffect(viewAction) {
+        when (viewAction) {
+            null -> Unit
+            is NewEventAction.NavigateDetail -> {
+                navController.navigate(
+                    DestinationScreen.DetailScreen.withArgs(viewAction.eventId.toString())
+                )
+            }
+        }
+    }
 }
 
 @Composable
@@ -105,7 +132,9 @@ private fun NewEventContent(
                     .fillMaxSize()
             ) {
                 Button(
-                    onClick = { },
+                    onClick = {
+                        effectHandler.invoke(NewEventEffect.OnConfirmClick)
+                    },
                     modifier = Modifier
                         .wrapContentHeight()
                         .fillMaxWidth()

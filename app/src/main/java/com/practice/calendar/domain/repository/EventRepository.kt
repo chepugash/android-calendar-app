@@ -11,4 +11,6 @@ interface EventRepository {
     suspend fun updateEventsFromRemote()
 
     fun getEventById(eventId: Long): Flow<EventInfo?>
+
+    suspend fun createEvent(eventInfo: EventInfo): Long
 }

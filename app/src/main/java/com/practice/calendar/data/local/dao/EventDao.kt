@@ -21,7 +21,7 @@ interface EventDao {
     ): Flow<List<EventDbEntity>?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun createEvent(eventDbEntity: EventDbEntity)
+    suspend fun createEvent(eventDbEntity: EventDbEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveEvents(events: List<EventDbEntity>)

@@ -40,7 +40,7 @@ fun Navigation() {
         }
 
         composable(route = DestinationScreen.NewEventScreen.route) {
-            NewEventScreen()
+            NewEventScreen(navController = navController)
         }
     }
 }
