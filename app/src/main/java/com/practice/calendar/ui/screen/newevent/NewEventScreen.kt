@@ -16,6 +16,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -79,11 +80,12 @@ private fun NewEventScreenActions(
     LaunchedEffect(viewAction) {
         when (viewAction) {
             null -> Unit
-            is NewEventAction.NavigateDetail -> {
+            is NewEventAction.NavigateToDetail -> {
                 navController.navigate(
                     DestinationScreen.DetailScreen.withArgs(viewAction.eventId.toString())
                 )
             }
+            NewEventAction.NavigateBack -> navController.popBackStack()
         }
     }
 }
@@ -96,7 +98,7 @@ private fun NewEventContent(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        NewEventToolbar()
+        NewEventToolbar(effectHandler)
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -153,7 +155,9 @@ private fun NewEventContent(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun NewEventToolbar() {
+private fun NewEventToolbar(
+    effectHandler: (NewEventEffect) -> Unit
+) {
     TopAppBar(
         title = {
             Text(
@@ -162,11 +166,16 @@ private fun NewEventToolbar() {
             )
         },
         navigationIcon = {
-            Icon(
-                painterResource(id = R.drawable.ic_back),
-                contentDescription = "toolbar back icon",
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp)
-            )
+            IconButton(
+                onClick = {
+                    effectHandler.invoke(NewEventEffect.OnBackClick)
+                }
+            ) {
+                Icon(
+                    painterResource(id = R.drawable.ic_back),
+                    contentDescription = "toolbar back icon",
+                )
+            }
         },
     )
 }

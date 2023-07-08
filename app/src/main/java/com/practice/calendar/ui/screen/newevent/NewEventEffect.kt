@@ -23,4 +23,6 @@ sealed interface NewEventEffect {
     data class OnDescriptionChanged(val desc: String) : NewEventEffect
 
     object OnConfirmClick : NewEventEffect
+
+    object OnBackClick : NewEventEffect
 }
