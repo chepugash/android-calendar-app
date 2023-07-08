@@ -28,78 +28,146 @@ class NewEventViewModel(
         get() = _action.asSharedFlow()
 
     fun effect(newEventEffect: NewEventEffect) {
-        when(newEventEffect) {
-            is NewEventEffect.ShowEvent -> getEvent(newEventEffect.eventId)
+        when (newEventEffect) {
             NewEventEffect.OnCloseDateDialog -> onCloseDateDialog()
             NewEventEffect.OnCloseTimeFinishDialog -> onCloseTimeFinishDialog()
             NewEventEffect.OnCloseTimeStartDialog -> onCloseTimeStartDialog()
+            NewEventEffect.OnTimeFinishClick -> onTimeFinishClick()
+            NewEventEffect.OnTimeStartClick -> onTimeStartClick()
+
             is NewEventEffect.OnConfirmDateDialog -> {
                 onConfirmDateDialog(newEventEffect.date)
             }
+
             is NewEventEffect.OnConfirmTimeFinishDialog -> {
                 onConfirmTimeFinishDialog(newEventEffect.timeFinish)
             }
+
             is NewEventEffect.OnConfirmTimeStartDialog -> {
                 onConfirmTimeStartDialog(newEventEffect.timeStart)
             }
+
             NewEventEffect.OnDateClick -> onDateClick()
             is NewEventEffect.OnDescriptionChanged -> {
                 onDescriptionChanged(newEventEffect.desc)
             }
+
             is NewEventEffect.OnNameChanged -> {
                 onNameChanged(newEventEffect.name)
             }
-            NewEventEffect.OnTimeFinishClick -> onTimeFinishClick()
-            NewEventEffect.OnTimeStartClick -> onTimeStartClick()
         }
     }
 
-    private fun onTimeStartClick() {}
-
-    private fun onTimeFinishClick() {}
-
-    private fun onNameChanged(name: String) {}
-
-    private fun onDescriptionChanged(desc: String) {}
-
-    private fun onDateClick() {}
-
-    private fun onConfirmTimeStartDialog(timeStart: LocalTime) {}
-
-    private fun onConfirmTimeFinishDialog(timeFinish: LocalTime) {}
-
-    private fun onConfirmDateDialog(date: LocalDate) {}
-
-    private fun onCloseTimeStartDialog() {}
-
-    private fun onCloseTimeFinishDialog() {}
-
-    private fun onCloseDateDialog() {}
-
-    // get event from data or create basic if null
-    private fun getEvent(eventId: Long) {
+    private fun onTimeStartClick() {
         viewModelScope.launch {
-            getEventUseCase(eventId).collect {
-                if (it == null) {
-                    _state.emit(
-                        _state.value.copy(
-                            eventInfo = EventInfo(
-                                id = 0,
-                                name = "",
-                                dateStart = LocalDateTime.now(),
-                                dateFinish = LocalDateTime.now().plusHours(1),
-                                description = ""
-                            )
-                        )
-                    )
-                } else {
-                    _state.emit(
-                        _state.value.copy(
-                            eventInfo = it
-                        )
-                    )
-                }
-            }
+            _state.emit(
+                _state.value.copy(
+                    showTimeStartDialog = true
+                )
+            )
+        }
+    }
+
+    private fun onTimeFinishClick() {
+        viewModelScope.launch {
+            _state.emit(
+                _state.value.copy(
+                    showTimeFinishDialog = true
+                )
+            )
+        }
+    }
+
+    private fun onNameChanged(name: String) {
+        viewModelScope.launch {
+            _state.emit(
+                _state.value.copy(
+                    name = name
+                )
+            )
+        }
+    }
+
+    private fun onDescriptionChanged(desc: String) {
+        viewModelScope.launch {
+            _state.emit(
+                _state.value.copy(
+                    description = desc
+                )
+            )
+        }
+    }
+
+    private fun onDateClick() {
+        viewModelScope.launch {
+            _state.emit(
+                _state.value.copy(
+                    showDateDialog = true
+                )
+            )
+        }
+    }
+
+    private fun onConfirmTimeStartDialog(timeStart: LocalTime) {
+        viewModelScope.launch {
+            _state.emit(
+                _state.value.copy(
+                    showTimeStartDialog = false,
+                    timeStart = timeStart
+                )
+            )
+        }
+    }
+
+    private fun onConfirmTimeFinishDialog(timeFinish: LocalTime) {
+        viewModelScope.launch {
+            _state.emit(
+                _state.value.copy(
+                    showTimeFinishDialog = false,
+                    timeFinish = timeFinish
+                )
+            )
+        }
+    }
+
+    private fun onConfirmDateDialog(date: LocalDate) {
+        viewModelScope.launch {
+            _state.emit(
+                _state.value.copy(
+                    showDateDialog = false,
+                    date = date
+                )
+            )
+        }
+    }
+
+    private fun onCloseTimeStartDialog() {
+        viewModelScope.launch {
+            _state.emit(
+                _state.value.copy(
+                    showTimeStartDialog = false
+                )
+            )
+        }
+    }
+
+    private fun onCloseTimeFinishDialog() {
+        viewModelScope.launch {
+            _state.emit(
+                _state.value.copy(
+                    showTimeFinishDialog = false
+                )
+            )
+        }
+    }
+
+    private fun onCloseDateDialog() {
+        viewModelScope.launch {
+            _state.emit(
+                _state.value.copy(
+                    showDateDialog = false
+                )
+            )
         }
     }
 }

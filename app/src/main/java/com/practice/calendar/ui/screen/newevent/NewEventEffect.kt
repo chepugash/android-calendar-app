@@ -17,8 +17,6 @@ sealed interface NewEventEffect {
     data class OnConfirmTimeFinishDialog(val timeFinish: LocalTime) : NewEventEffect
     object OnCloseTimeFinishDialog : NewEventEffect
 
-    data class ShowEvent(val eventId: Long) : NewEventEffect
-
     data class OnNameChanged(val name: String) : NewEventEffect
 
     data class OnDescriptionChanged(val desc: String) : NewEventEffect

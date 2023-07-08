@@ -1,17 +1,14 @@
 package com.practice.calendar.ui.screen.newevent
 
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -24,16 +21,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.practice.calendar.R
 import com.practice.calendar.domain.entity.EventInfo
 import com.practice.calendar.ui.screen.calendar.CalendarEffect
@@ -53,74 +51,71 @@ import java.time.LocalTime
 fun NewEventScreen(
     viewModel: NewEventViewModel = koinViewModel()
 ) {
-    CalendarTheme {
-        NewEventContent()
-    }
+
+    val state = viewModel.state.collectAsStateWithLifecycle()
+    val action by viewModel.action.collectAsStateWithLifecycle(null)
+
+    NewEventContent(
+        viewState = state.value,
+        effectHandler = viewModel::effect
+    )
 }
 
 @Composable
-private fun NewEventContent() {
+private fun NewEventContent(
+    viewState: NewEventState,
+    effectHandler: (NewEventEffect) -> Unit
+) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        val info = EventInfo(
-            id = 0,
-            name = "sample",
-            description = "desc sample",
-            dateStart = LocalDateTime.now(),
-            dateFinish = LocalDateTime.now()
-        )
-        if (info != null) {
-            NewEventToolbar(title = "Новое событие")
-            Column(
+        NewEventToolbar()
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            EventTitle(
+                name = viewState.name,
+                effectHandler = effectHandler
+            )
+            Divider(modifier = Modifier.padding(vertical = 16.dp))
+
+            EventTime(
+                viewState = viewState,
+                effectHandler = effectHandler
+            )
+            Divider(modifier = Modifier.padding(vertical = 16.dp))
+
+            EventDate(
+                date = viewState.date,
+                showDialog = viewState.showDateDialog,
+                effectHandler = effectHandler
+            )
+            Divider(modifier = Modifier.padding(vertical = 16.dp))
+
+            EventDescription(
+                desc = viewState.description,
+                effectHandler = effectHandler
+            )
+
+            BoxWithConstraints(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState())
             ) {
-                Text(
-                    text = "Добавьте название:",
-                    fontSize = 18.sp,
+                Button(
+                    onClick = { },
                     modifier = Modifier
-                        .padding(bottom = 8.dp)
-                        .align(Alignment.CenterHorizontally)
-                )
-                EventTitle(title = info.name)
-                Divider(modifier = Modifier.padding(vertical = 16.dp))
-                EventTime(
-                    start = info.dateStart.formatToTime(),
-                    finish = info.dateFinish.formatToTime()
-                )
-                Divider(modifier = Modifier.padding(vertical = 16.dp))
-                EventDate(
-                    date = info.dateStart.formatToDate()
-                )
-                Divider(modifier = Modifier.padding(vertical = 16.dp))
-                Text(
-                    text = "Добавьте описание:",
-                    fontSize = 18.sp,
-                    modifier = Modifier
-                        .padding(bottom = 8.dp)
-                        .align(Alignment.CenterHorizontally)
-                )
-                EventDescription(desc = info.description)
-                BoxWithConstraints(
-                    modifier = Modifier
-                        .fillMaxSize()
+                        .wrapContentHeight()
+                        .fillMaxWidth()
+                        .align(Alignment.BottomCenter)
+                        .padding(top = 8.dp)
                 ) {
-                    Button(
-                        onClick = {  },
-                        modifier = Modifier
-                            .wrapContentHeight()
-                            .fillMaxWidth()
-                            .align(Alignment.BottomCenter)
-                            .padding(top = 8.dp)
-                    ) {
-                        Text(
-                            text = "Применить",
-                            fontSize = 18.sp
-                        )
-                    }
+                    Text(
+                        text = "Применить",
+                        fontSize = 18.sp
+                    )
                 }
             }
         }
@@ -129,11 +124,11 @@ private fun NewEventContent() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun NewEventToolbar(title: String) {
+private fun NewEventToolbar() {
     TopAppBar(
         title = {
             Text(
-                text = title,
+                text = "Новое событие",
                 fontSize = 24.sp
             )
         },
@@ -148,21 +143,27 @@ private fun NewEventToolbar(title: String) {
 }
 
 @Composable
-private fun EventTitle(title: String) {
-    val textState = remember { mutableStateOf("") }
+private fun EventTitle(
+    name: String,
+    effectHandler: (NewEventEffect) -> Unit
+) {
     val maxSize = 30
-    Box {
+    Column {
+        Text(
+            text = "Добавьте название:",
+            fontSize = 18.sp,
+            modifier = Modifier
+                .padding(bottom = 8.dp)
+                .align(Alignment.CenterHorizontally)
+        )
         OutlinedTextField(
-            value = textState.value,
+            value = name,
             onValueChange = {
                 if (it.length <= maxSize) {
-                    textState.value = it
+                    effectHandler.invoke(NewEventEffect.OnNameChanged(it))
                 }
             },
             textStyle = TextStyle(fontSize = 18.sp),
-//            placeholder = {
-//                Text(text = "Название", fontSize = 14.sp)
-//            },
             singleLine = true,
             leadingIcon = {
                 Icon(
@@ -171,7 +172,7 @@ private fun EventTitle(title: String) {
                 )
             },
             trailingIcon = {
-                Text(text = "${textState.value.length}/$maxSize")
+                Text(text = "${name.length}/$maxSize")
             },
             modifier = Modifier.fillMaxWidth()
         )
@@ -179,7 +180,10 @@ private fun EventTitle(title: String) {
 }
 
 @Composable
-private fun EventTime(start: String, finish: String) {
+private fun EventTime(
+    viewState: NewEventState,
+    effectHandler: (NewEventEffect) -> Unit
+) {
     Row(
         horizontalArrangement = Arrangement.Start,
         modifier = Modifier
@@ -198,62 +202,125 @@ private fun EventTime(start: String, finish: String) {
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            TimePick()
+            TimeStartPicker(
+                timeStart = viewState.timeStart,
+                showDialog = viewState.showTimeStartDialog,
+                effectHandler = effectHandler
+            )
             Text(
                 text = "-",
                 fontSize = 20.sp,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
             )
-            TimePick()
+            TimeFinishPicker(
+                timeFinish = viewState.timeFinish,
+                showDialog = viewState.showTimeFinishDialog,
+                effectHandler = effectHandler
+            )
         }
     }
 }
 
 @Composable
-private fun TimePick() {
-    val localTime = remember { mutableStateOf(LocalTime.now()) }
-    val dateDialogState = rememberMaterialDialogState()
+private fun TimeStartPicker(
+    timeStart: LocalTime,
+    showDialog: Boolean,
+    effectHandler: (NewEventEffect) -> Unit
+) {
+    val timeDialogState = rememberMaterialDialogState()
     Row(
         modifier = Modifier.wrapContentWidth()
     ) {
         TextButton(
             onClick = {
-                dateDialogState.show()
+                effectHandler.invoke(NewEventEffect.OnTimeStartClick)
             },
             modifier = Modifier.wrapContentWidth()
         ) {
             Text(
-                text = localTime.value.formatToTime(),
+                text = timeStart.formatToTime(),
                 fontSize = 20.sp,
             )
         }
         MaterialDialog(
-            dialogState = dateDialogState,
+            dialogState = timeDialogState,
             buttons = {
                 positiveButton(text = "ок")
                 negativeButton(text = "закрыть") {
-
+                    effectHandler.invoke(NewEventEffect.OnCloseTimeStartDialog)
                 }
             },
             onCloseRequest = {
+                effectHandler.invoke(NewEventEffect.OnCloseTimeStartDialog)
+            },
+            autoDismiss = false,
 
+        ) {
+            timepicker(
+                initialTime = timeStart,
+                title = "Выберите время начала",
+                is24HourClock = true
+            ) {
+                effectHandler.invoke(NewEventEffect.OnConfirmTimeStartDialog(it))
+            }
+        }
+    }
+    if (showDialog) { timeDialogState.show() } else { timeDialogState.hide() }
+}
+
+@Composable
+private fun TimeFinishPicker(
+    timeFinish: LocalTime,
+    showDialog: Boolean,
+    effectHandler: (NewEventEffect) -> Unit
+) {
+    val timeDialogState = rememberMaterialDialogState()
+    Row(
+        modifier = Modifier.wrapContentWidth()
+    ) {
+        TextButton(
+            onClick = {
+                effectHandler.invoke(NewEventEffect.OnTimeFinishClick)
+            },
+            modifier = Modifier.wrapContentWidth()
+        ) {
+            Text(
+                text = timeFinish.formatToTime(),
+                fontSize = 20.sp,
+            )
+        }
+        MaterialDialog(
+            dialogState = timeDialogState,
+            buttons = {
+                positiveButton(text = "ок")
+                negativeButton(text = "закрыть") {
+                    effectHandler.invoke(NewEventEffect.OnCloseTimeFinishDialog)
+                }
+            },
+            onCloseRequest = {
+                effectHandler.invoke(NewEventEffect.OnCloseTimeFinishDialog)
             },
             autoDismiss = true
         ) {
             timepicker(
-                initialTime = localTime.value,
-                title = "Pick a date",
+                initialTime = timeFinish,
+                title = "Выберите время окончания",
+                is24HourClock = true
             ) {
-                localTime.value = it
+                effectHandler.invoke(NewEventEffect.OnConfirmTimeFinishDialog(it))
             }
         }
     }
+    if (showDialog) { timeDialogState.show() } else { timeDialogState.hide() }
 }
 
 @Composable
-private fun EventDate(date: String) {
-    val localDate = remember { mutableStateOf(LocalDate.now()) }
+private fun EventDate(
+    date: LocalDate,
+    showDialog: Boolean,
+    effectHandler: (NewEventEffect) -> Unit
+) {
     val dateDialogState = rememberMaterialDialogState()
     Row(
         modifier = Modifier.fillMaxWidth()
@@ -267,12 +334,12 @@ private fun EventDate(date: String) {
         )
         TextButton(
             onClick = {
-                dateDialogState.show()
+                effectHandler.invoke(NewEventEffect.OnDateClick)
             },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = localDate.value.formatToDate(),
+                text = date.formatToDate(),
                 fontSize = 20.sp,
             )
         }
@@ -281,41 +348,48 @@ private fun EventDate(date: String) {
             buttons = {
                 positiveButton(text = "ок")
                 negativeButton(text = "закрыть") {
-
+                    effectHandler.invoke(NewEventEffect.OnCloseDateDialog)
                 }
             },
             onCloseRequest = {
-
+                effectHandler.invoke(NewEventEffect.OnCloseDateDialog)
             },
-            autoDismiss = true
+            autoDismiss = false
         ) {
             datepicker(
-                initialDate = localDate.value,
-                title = "Pick a date",
+                initialDate = date,
+                title = "Выберите дату",
             ) {
-                localDate.value = it
+                effectHandler.invoke(NewEventEffect.OnConfirmDateDialog(it))
             }
         }
     }
+    if (showDialog) { dateDialogState.show() } else { dateDialogState.hide() }
 }
 
 @Composable
-private fun EventDescription(desc: String) {
-    val textState = remember { mutableStateOf("") }
-    Box {
+private fun EventDescription(
+    desc: String,
+    effectHandler: (NewEventEffect) -> Unit
+) {
+    Column {
+        Text(
+            text = "Добавьте описание:",
+            fontSize = 18.sp,
+            modifier = Modifier
+                .padding(bottom = 8.dp)
+                .align(Alignment.CenterHorizontally)
+        )
         OutlinedTextField(
-            value = textState.value,
+            value = desc,
             onValueChange = {
-                textState.value = it
+                effectHandler.invoke(NewEventEffect.OnDescriptionChanged(it))
             },
             textStyle = TextStyle(fontSize = 18.sp),
-//            placeholder = {
-//                Text(text = "Описание:", fontSize = 14.sp)
-//            },
             leadingIcon = {
                 Icon(
                     painterResource(id = R.drawable.ic_description),
-                    contentDescription = "title text edit icon",
+                    contentDescription = "title description edit icon",
                 )
             },
             minLines = 4,
@@ -323,13 +397,5 @@ private fun EventDescription(desc: String) {
             modifier = Modifier
                 .fillMaxWidth()
         )
-    }
-}
-
-@Preview
-@Composable
-private fun NewEventPreview() {
-    CalendarTheme {
-        NewEventContent()
     }
 }

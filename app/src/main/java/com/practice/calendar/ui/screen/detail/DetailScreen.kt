@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,7 +58,9 @@ fun DetailContent(
     viewState: DetailState,
     effectHandler: (DetailEffect) -> Unit
 ) {
-    effectHandler.invoke(DetailEffect.ShowEvent(eventId))
+    LaunchedEffect(effectHandler) {
+        effectHandler.invoke(DetailEffect.ShowEvent(eventId))
+    }
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
