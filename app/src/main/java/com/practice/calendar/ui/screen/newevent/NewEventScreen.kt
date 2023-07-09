@@ -1,8 +1,8 @@
 package com.practice.calendar.ui.screen.newevent
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +19,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -29,21 +30,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.practice.calendar.R
-import com.practice.calendar.domain.entity.EventInfo
 import com.practice.calendar.ui.navigation.DestinationScreen
-import com.practice.calendar.ui.screen.calendar.CalendarAction
-import com.practice.calendar.ui.screen.calendar.CalendarEffect
-import com.practice.calendar.ui.screen.detail.DetailEffect
-import com.practice.calendar.ui.theme.CalendarTheme
 import com.practice.calendar.util.formatToDate
 import com.practice.calendar.util.formatToTime
 import com.vanpra.composematerialdialogs.MaterialDialog
@@ -52,7 +48,6 @@ import com.vanpra.composematerialdialogs.datetime.time.timepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.LocalTime
 
 @Composable
@@ -84,6 +79,7 @@ private fun NewEventScreenActions(
     navController: NavController,
     viewAction: NewEventAction?,
 ) {
+    val context = LocalContext.current
     LaunchedEffect(viewAction) {
         when (viewAction) {
             null -> Unit
@@ -91,6 +87,9 @@ private fun NewEventScreenActions(
                 navController.navigate(
                     DestinationScreen.DetailScreen.withArgs(viewAction.eventId.toString())
                 )
+            }
+            is NewEventAction.ShowToast -> {
+                Toast.makeText(context, viewAction.message, Toast.LENGTH_LONG).show()
             }
             NewEventAction.NavigateBack -> navController.popBackStack()
         }

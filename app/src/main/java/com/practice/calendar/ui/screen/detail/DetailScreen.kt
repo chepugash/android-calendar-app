@@ -1,5 +1,6 @@
 package com.practice.calendar.ui.screen.detail
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -65,6 +67,7 @@ private fun DetailScreenActions(
     navController: NavController,
     viewAction: DetailAction?
 ) {
+    val context = LocalContext.current
     LaunchedEffect(viewAction) {
         when (viewAction) {
             null -> Unit
@@ -73,6 +76,9 @@ private fun DetailScreenActions(
                     route = DestinationScreen.CalendarScreen.route,
                     inclusive = false
                 )
+            }
+            is DetailAction.ShowToast -> {
+                Toast.makeText(context, viewAction.message, Toast.LENGTH_LONG).show()
             }
         }
     }

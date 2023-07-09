@@ -35,11 +35,17 @@ class DetailViewModel(
 
     private fun getEvent(eventId: Long) {
         viewModelScope.launch {
-            getEventUseCase(eventId).collect {
-                _state.emit(
-                    _state.value.copy(
-                        eventInfo = it
+            try {
+                getEventUseCase(eventId).collect {
+                    _state.emit(
+                        _state.value.copy(
+                            eventInfo = it
+                        )
                     )
+                }
+            } catch (e: Throwable) {
+                _action.emit(
+                    DetailAction.ShowToast(e.message.toString())
                 )
             }
         }
@@ -47,10 +53,16 @@ class DetailViewModel(
 
     private fun onDeleteClick(eventId: Long) {
         viewModelScope.launch {
-            deleteEventUseCase(eventId)
-            _action.emit(
-                DetailAction.NavigateBack
-            )
+            try {
+                deleteEventUseCase(eventId)
+                _action.emit(
+                    DetailAction.NavigateBack
+                )
+            } catch (e: Throwable) {
+                _action.emit(
+                    DetailAction.ShowToast(e.message.toString())
+                )
+            }
         }
     }
 

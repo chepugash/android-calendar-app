@@ -1,6 +1,5 @@
 package com.practice.calendar.ui.screen.newevent
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practice.calendar.domain.entity.EventInfo
@@ -192,7 +191,9 @@ class NewEventViewModel(
                     NewEventAction.NavigateToDetail(createdId)
                 )
             } catch (e: Throwable) {
-                _state.emit(_state.value.copy(error = e.message))
+                _action.emit(
+                    NewEventAction.ShowToast(e.message.toString())
+                )
             }
         }
     }
