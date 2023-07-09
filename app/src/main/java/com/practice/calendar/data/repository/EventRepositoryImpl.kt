@@ -1,7 +1,6 @@
 package com.practice.calendar.data.repository
 
 import com.practice.calendar.data.local.dao.EventDao
-import com.practice.calendar.data.local.entity.EventDbEntity
 import com.practice.calendar.data.mapper.localDateToTimestamp
 import com.practice.calendar.data.mapper.toEventDbEntity
 import com.practice.calendar.data.mapper.toEventDbEntityList
@@ -15,7 +14,7 @@ import java.time.LocalDate
 
 class EventRepositoryImpl(
     private val api: EventApi,
-    private val dao: EventDao
+    private val dao: EventDao,
 ) : EventRepository {
 
     override fun getEventsByDate(date: LocalDate): Flow<List<EventInfo>?> {

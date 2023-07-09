@@ -29,6 +29,7 @@ class DetailViewModel(
         when(detailEffect) {
             is DetailEffect.ShowEvent -> getEvent(detailEffect.eventId)
             is DetailEffect.OnDeleteClick -> onDeleteClick(detailEffect.eventId)
+            DetailEffect.OnBackClick -> onBackClick()
         }
     }
 
@@ -48,7 +49,15 @@ class DetailViewModel(
         viewModelScope.launch {
             deleteEventUseCase(eventId)
             _action.emit(
-                DetailAction.NavigateToCalendar
+                DetailAction.NavigateBack
+            )
+        }
+    }
+
+    private fun onBackClick() {
+        viewModelScope.launch {
+            _action.emit(
+                DetailAction.NavigateBack
             )
         }
     }

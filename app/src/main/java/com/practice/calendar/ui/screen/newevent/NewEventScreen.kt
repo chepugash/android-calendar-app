@@ -1,5 +1,6 @@
 package com.practice.calendar.ui.screen.newevent
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -16,6 +17,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -28,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,6 +42,7 @@ import com.practice.calendar.domain.entity.EventInfo
 import com.practice.calendar.ui.navigation.DestinationScreen
 import com.practice.calendar.ui.screen.calendar.CalendarAction
 import com.practice.calendar.ui.screen.calendar.CalendarEffect
+import com.practice.calendar.ui.screen.detail.DetailEffect
 import com.practice.calendar.ui.theme.CalendarTheme
 import com.practice.calendar.util.formatToDate
 import com.practice.calendar.util.formatToTime
@@ -69,6 +73,10 @@ fun NewEventScreen(
         navController = navController,
         viewAction = action
     )
+
+    BackHandler {
+        viewModel::effect.invoke(NewEventEffect.OnBackClick)
+    }
 }
 
 @Composable
@@ -79,11 +87,12 @@ private fun NewEventScreenActions(
     LaunchedEffect(viewAction) {
         when (viewAction) {
             null -> Unit
-            is NewEventAction.NavigateDetail -> {
+            is NewEventAction.NavigateToDetail -> {
                 navController.navigate(
                     DestinationScreen.DetailScreen.withArgs(viewAction.eventId.toString())
                 )
             }
+            NewEventAction.NavigateBack -> navController.popBackStack()
         }
     }
 }
@@ -96,7 +105,7 @@ private fun NewEventContent(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        NewEventToolbar()
+        NewEventToolbar(effectHandler)
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -142,7 +151,7 @@ private fun NewEventContent(
                         .padding(top = 8.dp)
                 ) {
                     Text(
-                        text = "Применить",
+                        text = stringResource(R.string.new_event_screen_confirm_button),
                         fontSize = 18.sp
                     )
                 }
@@ -153,20 +162,27 @@ private fun NewEventContent(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun NewEventToolbar() {
+private fun NewEventToolbar(
+    effectHandler: (NewEventEffect) -> Unit
+) {
     TopAppBar(
         title = {
             Text(
-                text = "Новое событие",
+                text = stringResource(R.string.new_event),
                 fontSize = 24.sp
             )
         },
         navigationIcon = {
-            Icon(
-                painterResource(id = R.drawable.ic_back),
-                contentDescription = "toolbar back icon",
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp)
-            )
+            IconButton(
+                onClick = {
+                    effectHandler.invoke(NewEventEffect.OnBackClick)
+                }
+            ) {
+                Icon(
+                    painterResource(id = R.drawable.ic_back),
+                    contentDescription = stringResource(R.string.toolbar_back_icon_in_new_event),
+                )
+            }
         },
     )
 }
@@ -179,7 +195,7 @@ private fun EventTitle(
     val maxSize = 30
     Column {
         Text(
-            text = "Добавьте название:",
+            text = stringResource(R.string.new_event_add_name),
             fontSize = 18.sp,
             modifier = Modifier
                 .padding(bottom = 8.dp)
@@ -197,7 +213,7 @@ private fun EventTitle(
             leadingIcon = {
                 Icon(
                     painterResource(id = R.drawable.ic_edit),
-                    contentDescription = "title text edit icon",
+                    contentDescription = stringResource(R.string.title_text_edit_icon),
                 )
             },
             trailingIcon = {
@@ -221,7 +237,7 @@ private fun EventTime(
     ) {
         Icon(
             painterResource(id = R.drawable.ic_time),
-            contentDescription = "toolbar calendar icon in details",
+            contentDescription = stringResource(R.string.time_icon_in_new_event),
             modifier = Modifier
                 .padding(end = 8.dp)
                 .align(Alignment.CenterVertically)
@@ -237,7 +253,7 @@ private fun EventTime(
                 effectHandler = effectHandler
             )
             Text(
-                text = "-",
+                text = stringResource(R.string.time_divider),
                 fontSize = 20.sp,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
@@ -275,8 +291,8 @@ private fun TimeStartPicker(
         MaterialDialog(
             dialogState = timeDialogState,
             buttons = {
-                positiveButton(text = "ок")
-                negativeButton(text = "закрыть") {
+                positiveButton(text = stringResource(R.string.date_picker_positive))
+                negativeButton(text = stringResource(R.string.date_picker_negative)) {
                     effectHandler.invoke(NewEventEffect.OnCloseTimeStartDialog)
                 }
             },
@@ -288,7 +304,7 @@ private fun TimeStartPicker(
         ) {
             timepicker(
                 initialTime = timeStart,
-                title = "Выберите время начала",
+                title = stringResource(R.string.start_time_picker_title),
                 is24HourClock = true
             ) {
                 effectHandler.invoke(NewEventEffect.OnConfirmTimeStartDialog(it))
@@ -322,8 +338,8 @@ private fun TimeFinishPicker(
         MaterialDialog(
             dialogState = timeDialogState,
             buttons = {
-                positiveButton(text = "ок")
-                negativeButton(text = "закрыть") {
+                positiveButton(text = stringResource(R.string.date_picker_positive))
+                negativeButton(text = stringResource(R.string.date_picker_negative)) {
                     effectHandler.invoke(NewEventEffect.OnCloseTimeFinishDialog)
                 }
             },
@@ -334,7 +350,7 @@ private fun TimeFinishPicker(
         ) {
             timepicker(
                 initialTime = timeFinish,
-                title = "Выберите время окончания",
+                title = stringResource(R.string.finish_time_picker_time),
                 is24HourClock = true
             ) {
                 effectHandler.invoke(NewEventEffect.OnConfirmTimeFinishDialog(it))
@@ -356,7 +372,7 @@ private fun EventDate(
     ) {
         Icon(
             painterResource(id = R.drawable.ic_calendar),
-            contentDescription = "toolbar calendar icon in details",
+            contentDescription = stringResource(R.string.calendar_icon_in_new_event),
             modifier = Modifier
                 .padding(end = 8.dp)
                 .align(Alignment.CenterVertically)
@@ -375,8 +391,8 @@ private fun EventDate(
         MaterialDialog(
             dialogState = dateDialogState,
             buttons = {
-                positiveButton(text = "ок")
-                negativeButton(text = "закрыть") {
+                positiveButton(text = stringResource(R.string.date_picker_positive))
+                negativeButton(text = stringResource(R.string.date_picker_negative)) {
                     effectHandler.invoke(NewEventEffect.OnCloseDateDialog)
                 }
             },
@@ -387,7 +403,7 @@ private fun EventDate(
         ) {
             datepicker(
                 initialDate = date,
-                title = "Выберите дату",
+                title = stringResource(R.string.date_picker_title),
             ) {
                 effectHandler.invoke(NewEventEffect.OnConfirmDateDialog(it))
             }
@@ -403,7 +419,7 @@ private fun EventDescription(
 ) {
     Column {
         Text(
-            text = "Добавьте описание:",
+            text = stringResource(R.string.new_event_add_description),
             fontSize = 18.sp,
             modifier = Modifier
                 .padding(bottom = 8.dp)
@@ -418,7 +434,7 @@ private fun EventDescription(
             leadingIcon = {
                 Icon(
                     painterResource(id = R.drawable.ic_description),
-                    contentDescription = "title description edit icon",
+                    contentDescription = stringResource(R.string.description_edit_icon_in_new_event),
                 )
             },
             minLines = 4,

@@ -36,9 +36,8 @@ class NewEventViewModel(
             NewEventEffect.OnTimeFinishClick -> onTimeFinishClick()
             NewEventEffect.OnTimeStartClick -> onTimeStartClick()
 
-            NewEventEffect.OnConfirmClick -> {
-                onConfirmClick()
-            }
+            NewEventEffect.OnConfirmClick -> onConfirmClick()
+            NewEventEffect.OnBackClick -> onBackClick()
 
             is NewEventEffect.OnConfirmDateDialog -> {
                 onConfirmDateDialog(newEventEffect.date)
@@ -186,7 +185,15 @@ class NewEventViewModel(
                 description = state.value.description
             ))
             _action.emit(
-                NewEventAction.NavigateDetail(createdId)
+                NewEventAction.NavigateToDetail(createdId)
+            )
+        }
+    }
+
+    private fun onBackClick() {
+        viewModelScope.launch {
+            _action.emit(
+                NewEventAction.NavigateBack
             )
         }
     }
