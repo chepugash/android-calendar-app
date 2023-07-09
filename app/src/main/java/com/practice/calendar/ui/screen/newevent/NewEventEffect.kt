@@ -1,6 +1,5 @@
 package com.practice.calendar.ui.screen.newevent
 
-import com.practice.calendar.ui.screen.calendar.CalendarEffect
 import java.time.LocalDate
 import java.time.LocalTime
 
