@@ -26,7 +26,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,10 +39,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.practice.calendar.R
 import com.practice.calendar.ui.navigation.DestinationScreen
-import com.practice.calendar.ui.theme.CalendarTheme
-import com.practice.calendar.ui.theme.LightOnPrimary
-import com.practice.calendar.ui.theme.LightPrimary
-import com.practice.calendar.ui.theme.LightPrimaryContainer
 import com.practice.calendar.util.formatToDate
 import com.practice.calendar.util.formatToTime
 import com.vanpra.composematerialdialogs.MaterialDialog
@@ -166,7 +161,7 @@ private fun NewEventContent(
                 ) {
                     Text(
                         text = stringResource(R.string.new_event_screen_confirm_button),
-                        fontSize = 18.sp
+                        style = MaterialTheme.typography.titleMedium
                     )
                 }
             }
@@ -183,7 +178,7 @@ private fun NewEventToolbar(
         title = {
             Text(
                 text = stringResource(R.string.new_event),
-                fontSize = 24.sp
+                style = MaterialTheme.typography.bodyLarge
             )
         },
         navigationIcon = {
@@ -210,7 +205,7 @@ private fun EventTitle(
     Column {
         Text(
             text = stringResource(R.string.new_event_add_name),
-            fontSize = 18.sp,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier
                 .padding(bottom = dimensionResource(id = R.dimen.step2))
                 .align(Alignment.CenterHorizontally)
@@ -222,7 +217,7 @@ private fun EventTitle(
                     effectHandler.invoke(NewEventEffect.OnNameChanged(it))
                 }
             },
-            textStyle = TextStyle(fontSize = 18.sp),
+            textStyle = MaterialTheme.typography.bodyMedium,
             singleLine = true,
             leadingIcon = {
                 Icon(
@@ -231,7 +226,10 @@ private fun EventTitle(
                 )
             },
             trailingIcon = {
-                Text(text = "${name.length}/$maxSize")
+                Text(
+                    text = "${name.length}/$maxSize",
+                    style = MaterialTheme.typography.bodySmall
+                )
             },
             modifier = Modifier.fillMaxWidth()
         )
@@ -268,7 +266,7 @@ private fun EventTime(
             )
             Text(
                 text = stringResource(R.string.time_divider),
-                fontSize = 20.sp,
+                style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
             )
@@ -299,14 +297,20 @@ private fun TimeStartPicker(
         ) {
             Text(
                 text = timeStart.formatToTime(),
-                fontSize = 20.sp,
+                style = MaterialTheme.typography.titleLarge
             )
         }
         MaterialDialog(
             dialogState = timeDialogState,
             buttons = {
-                positiveButton(text = stringResource(R.string.date_picker_positive))
-                negativeButton(text = stringResource(R.string.date_picker_negative)) {
+                positiveButton(
+                    text = stringResource(R.string.date_picker_positive),
+                    textStyle = MaterialTheme.typography.labelSmall
+                )
+                negativeButton(
+                    text = stringResource(R.string.date_picker_negative),
+                    textStyle = MaterialTheme.typography.labelSmall
+                ) {
                     effectHandler.invoke(NewEventEffect.OnCloseTimeStartDialog)
                 }
             },
@@ -360,14 +364,20 @@ private fun TimeFinishPicker(
         ) {
             Text(
                 text = timeFinish.formatToTime(),
-                fontSize = 20.sp,
+                style = MaterialTheme.typography.titleLarge
             )
         }
         MaterialDialog(
             dialogState = timeDialogState,
             buttons = {
-                positiveButton(text = stringResource(R.string.date_picker_positive))
-                negativeButton(text = stringResource(R.string.date_picker_negative)) {
+                positiveButton(
+                    text = stringResource(R.string.date_picker_positive),
+                    textStyle = MaterialTheme.typography.labelSmall
+                )
+                negativeButton(
+                    text = stringResource(R.string.date_picker_negative),
+                    textStyle = MaterialTheme.typography.labelSmall
+                ) {
                     effectHandler.invoke(NewEventEffect.OnCloseTimeFinishDialog)
                 }
             },
@@ -428,14 +438,20 @@ private fun EventDate(
         ) {
             Text(
                 text = date.formatToDate(),
-                fontSize = 20.sp,
+                style = MaterialTheme.typography.titleLarge
             )
         }
         MaterialDialog(
             dialogState = dateDialogState,
             buttons = {
-                positiveButton(text = stringResource(R.string.date_picker_positive))
-                negativeButton(text = stringResource(R.string.date_picker_negative)) {
+                positiveButton(
+                    text = stringResource(R.string.date_picker_positive),
+                    textStyle = MaterialTheme.typography.labelSmall,
+                )
+                negativeButton(
+                    text = stringResource(R.string.date_picker_negative),
+                    textStyle = MaterialTheme.typography.labelSmall
+                ) {
                     effectHandler.invoke(NewEventEffect.OnCloseDateDialog)
                 }
             },
@@ -476,7 +492,7 @@ private fun EventDescription(
     Column {
         Text(
             text = stringResource(R.string.new_event_add_description),
-            fontSize = 18.sp,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier
                 .padding(bottom = dimensionResource(id = R.dimen.step2))
                 .align(Alignment.CenterHorizontally)
@@ -486,7 +502,7 @@ private fun EventDescription(
             onValueChange = {
                 effectHandler.invoke(NewEventEffect.OnDescriptionChanged(it))
             },
-            textStyle = TextStyle(fontSize = 18.sp),
+            textStyle = MaterialTheme.typography.bodyMedium,
             leadingIcon = {
                 Icon(
                     painterResource(id = R.drawable.ic_description),

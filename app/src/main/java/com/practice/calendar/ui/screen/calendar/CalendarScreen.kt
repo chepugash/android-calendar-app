@@ -41,16 +41,12 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
 import com.practice.calendar.R
 import com.practice.calendar.domain.entity.EventInfo
 import com.practice.calendar.ui.navigation.DestinationScreen
-import com.practice.calendar.ui.theme.LightOnBackground
-import com.practice.calendar.ui.theme.LightOnPrimary
-import com.practice.calendar.ui.theme.LightPrimary
 import com.practice.calendar.util.formatToDate
 import com.practice.calendar.util.formatToTime
 import com.practice.calendar.util.timeInMinutes
@@ -203,7 +199,7 @@ fun DatePicker(
         }) {
             Text(
                 text = viewState.date.formatToDate(),
-                fontSize = 24.sp,
+                style = MaterialTheme.typography.titleLarge
             )
             Icon(
                 painter = painterResource(id = R.drawable.ic_more),
@@ -214,8 +210,14 @@ fun DatePicker(
     MaterialDialog(
         dialogState = dateDialogState,
         buttons = {
-            positiveButton(text = stringResource(R.string.date_picker_positive))
-            negativeButton(text = stringResource(R.string.date_picker_negative)) {
+            positiveButton(
+                text = stringResource(R.string.date_picker_positive),
+                textStyle = MaterialTheme.typography.labelSmall
+            )
+            negativeButton(
+                text = stringResource(R.string.date_picker_negative),
+                textStyle = MaterialTheme.typography.labelSmall
+            ) {
                 effectHandler.invoke(CalendarEffect.OnCloseDialog)
             }
         },
@@ -293,11 +295,12 @@ fun EventCard(
             Text(
                 text = eventInfo.name,
                 maxLines = 1,
-                fontSize = 14.sp
+                style = MaterialTheme.typography.bodySmall
             )
             Text(
                 text = "${eventInfo.dateStart.formatToTime()} - ${eventInfo.dateFinish.formatToTime()}",
-                fontSize = 14.sp
+                maxLines = 1,
+                style = MaterialTheme.typography.bodySmall
             )
         }
     }
@@ -321,7 +324,8 @@ fun HoursList() {
                 }
                 Text(
                     text = formattedIndex,
-                    modifier = Modifier.align(Alignment.CenterStart)
+                    modifier = Modifier.align(Alignment.CenterStart),
+                    style = MaterialTheme.typography.bodySmall
                 )
             }
         }
@@ -341,10 +345,7 @@ fun TimeTable() {
                 modifier = Modifier
                     .height(dimensionResource(id = R.dimen.calendar_hour))
             ) {
-                Divider(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                )
+                Divider(modifier = Modifier.align(Alignment.Center))
             }
         }
     }

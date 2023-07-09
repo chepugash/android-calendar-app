@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -151,7 +152,7 @@ fun DetailToolbar(
         title = {
             Text(
                 text = title,
-                fontSize = 24.sp
+                style = MaterialTheme.typography.bodyLarge
             )
         },
         navigationIcon = {
@@ -188,8 +189,7 @@ fun EventTitle(title: String) {
     ) {
         Text(
             text = title,
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold
+            style = MaterialTheme.typography.titleLarge
         )
     }
 }
@@ -211,17 +211,17 @@ fun EventTime(start: String, finish: String) {
         )
         Text(
             text = start,
-            fontSize = 24.sp,
+            style = MaterialTheme.typography.bodyLarge
         )
         Text(
             text = stringResource(R.string.time_divider),
-            fontSize = 24.sp,
+            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier
                 .padding(horizontal = dimensionResource(id = R.dimen.step2))
         )
         Text(
             text = finish,
-            fontSize = 24.sp
+            style = MaterialTheme.typography.bodyLarge
         )
     }
 }
@@ -238,7 +238,7 @@ fun EventDate(date: String) {
         )
         Text(
             text = date,
-            fontSize = 24.sp
+            style = MaterialTheme.typography.bodyLarge
         )
     }
 }
@@ -248,7 +248,7 @@ fun EventDescription(desc: String) {
     Box {
         Text(
             text = desc,
-            fontSize = 18.sp
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }
