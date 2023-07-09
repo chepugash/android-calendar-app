@@ -1,5 +1,6 @@
 package com.practice.calendar.ui.screen.detail
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,21 +22,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.practice.calendar.R
-import com.practice.calendar.domain.entity.EventInfo
 import com.practice.calendar.ui.navigation.DestinationScreen
-import com.practice.calendar.ui.screen.calendar.CalendarContent
-import com.practice.calendar.ui.theme.CalendarTheme
 import com.practice.calendar.util.formatToDate
 import com.practice.calendar.util.formatToTime
 import org.koin.androidx.compose.koinViewModel
-import java.time.LocalDateTime
 
 @Composable
 fun DetailScreen(
@@ -57,6 +54,10 @@ fun DetailScreen(
         navController = navController,
         viewAction = action
     )
+
+    BackHandler {
+        viewModel::effect.invoke(DetailEffect.OnBackClick)
+    }
 }
 
 @Composable
@@ -67,9 +68,10 @@ private fun DetailScreenActions(
     LaunchedEffect(viewAction) {
         when (viewAction) {
             null -> Unit
-            DetailAction.NavigateToCalendar -> {
-                navController.navigate(
-                    DestinationScreen.CalendarScreen.route
+            DetailAction.NavigateBack -> {
+                navController.popBackStack(
+                    route = DestinationScreen.CalendarScreen.route,
+                    inclusive = false
                 )
             }
         }
@@ -132,11 +134,16 @@ fun DetailToolbar(
             )
         },
         navigationIcon = {
-            Icon(
-                painterResource(id = R.drawable.ic_back),
-                contentDescription = "detail toolbar back icon",
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp)
-            )
+            IconButton(
+                onClick = {
+                    effectHandler.invoke(DetailEffect.OnBackClick)
+                }
+            ) {
+                Icon(
+                    painterResource(id = R.drawable.ic_back),
+                    contentDescription = stringResource(R.string.detail_toolbar_back_icon),
+                )
+            }
         },
         actions = {
             IconButton(
@@ -146,7 +153,7 @@ fun DetailToolbar(
             ) {
                 Icon(
                     painterResource(id = R.drawable.ic_delete),
-                    contentDescription = "detail toolbar delete icon",
+                    contentDescription = stringResource(R.string.detail_toolbar_delete_icon),
                 )
             }
         }
@@ -176,7 +183,7 @@ fun EventTime(start: String, finish: String) {
     ) {
         Icon(
             painterResource(id = R.drawable.ic_time),
-            contentDescription = "toolbar calendar icon in details",
+            contentDescription = stringResource(R.string.watches_icon_in_details),
             modifier = Modifier
                 .padding(end = 8.dp)
                 .align(Alignment.CenterVertically)
@@ -186,7 +193,7 @@ fun EventTime(start: String, finish: String) {
             fontSize = 24.sp,
         )
         Text(
-            text = "-",
+            text = stringResource(R.string.time_divider),
             fontSize = 24.sp,
             modifier = Modifier
                 .padding(start = 8.dp, end = 8.dp)
@@ -203,7 +210,7 @@ fun EventDate(date: String) {
     Row {
         Icon(
             painterResource(id = R.drawable.ic_calendar),
-            contentDescription = "toolbar calendar icon in details",
+            contentDescription = stringResource(R.string.calendar_icon_in_details),
             modifier = Modifier
                 .padding(end = 8.dp)
                 .align(Alignment.CenterVertically)

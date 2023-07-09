@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Календарь</string>
+    <string name="start_time_picker_title">Выберите время начала</string>
+    <string name="date_picker_positive">ок</string>
+    <string name="date_picker_negative">закрыть</string>
+    <string name="date_picker_title">Выберите дату</string>
+    <string name="new_event_screen_confirm_button">Применить</string>
+    <string name="new_event">Новое событие</string>
+    <string name="new_event_add_name">Добавьте название:</string>
+    <string name="finish_time_picker_time">Выберите время окончания</string>
+    <string name="new_event_add_description">Добавьте описание:</string>
+</resources>

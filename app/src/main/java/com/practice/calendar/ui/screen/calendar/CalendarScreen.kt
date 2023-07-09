@@ -32,17 +32,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import androidx.navigation.navOptions
 import com.practice.calendar.R
 import com.practice.calendar.domain.entity.EventInfo
 import com.practice.calendar.ui.navigation.DestinationScreen
-import com.practice.calendar.ui.theme.CalendarTheme
 import com.practice.calendar.util.formatToDate
 import com.practice.calendar.util.formatToTime
 import com.practice.calendar.util.timeInMinutes
@@ -72,7 +71,7 @@ fun CalendarScreen(
 }
 
 @Composable
-fun CalendarContent(
+private fun CalendarContent(
     viewState: CalendarState,
     effectHandler: (CalendarEffect) -> Unit
 ) {
@@ -116,7 +115,12 @@ private fun CalendarScreenActions(
                 )
             }
             CalendarAction.NavigateAddEvent -> {
-                navController.navigate(DestinationScreen.NewEventScreen.route)
+                navController.navigate(
+                    DestinationScreen.NewEventScreen.route,
+                    navOptions = navOptions {
+                        popUpToRoute
+                    }
+                )
             }
         }
     }
@@ -136,7 +140,7 @@ fun AddButton(effectHandler: (CalendarEffect) -> Unit) {
         ) {
             Icon(
                 painterResource(id = R.drawable.ic_add),
-                contentDescription = "add button icon"
+                contentDescription = stringResource(R.string.add_button_icon)
             )
         }
     }
@@ -155,7 +159,7 @@ fun CalendarToolbar(viewState: CalendarState, effectHandler: (CalendarEffect) ->
         navigationIcon = {
             Icon(
                 painterResource(id = R.drawable.ic_calendar),
-                contentDescription = "toolbar calendar icon",
+                contentDescription = stringResource(R.string.toolbar_calendar_icon),
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp)
             )
         }
@@ -175,15 +179,14 @@ fun DatePicker(
             Text(
                 text = viewState.date.formatToDate(),
                 fontSize = 24.sp,
-                color = Color.Blue
             )
         }
     }
     MaterialDialog(
         dialogState = dateDialogState,
         buttons = {
-            positiveButton(text = "ок")
-            negativeButton(text = "закрыть") {
+            positiveButton(text = stringResource(R.string.date_picker_positive))
+            negativeButton(text = stringResource(R.string.date_picker_negative)) {
                 effectHandler.invoke(CalendarEffect.OnCloseDialog)
             }
         },
@@ -194,7 +197,7 @@ fun DatePicker(
     ) {
         datepicker(
             initialDate = viewState.date,
-            title = "Pick a date",
+            title = stringResource(R.string.date_picker_title),
         ) {
             effectHandler.invoke(CalendarEffect.OnConfirmDialog(it))
         }
