@@ -1,6 +1,5 @@
 package com.practice.calendar.ui.screen.newevent
 
-import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
@@ -19,17 +18,16 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -37,17 +35,21 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.practice.calendar.R
 import com.practice.calendar.ui.navigation.DestinationScreen
-import com.practice.calendar.ui.screen.detail.DetailToolbar
+import com.practice.calendar.ui.theme.CalendarTheme
+import com.practice.calendar.ui.theme.LightOnPrimary
+import com.practice.calendar.ui.theme.LightPrimary
+import com.practice.calendar.ui.theme.LightPrimaryContainer
 import com.practice.calendar.util.formatToDate
 import com.practice.calendar.util.formatToTime
 import com.vanpra.composematerialdialogs.MaterialDialog
+import com.vanpra.composematerialdialogs.datetime.date.DatePickerDefaults
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
+import com.vanpra.composematerialdialogs.datetime.time.TimePickerDefaults
 import com.vanpra.composematerialdialogs.datetime.time.timepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import org.koin.androidx.compose.koinViewModel
@@ -92,9 +94,11 @@ private fun NewEventScreenActions(
                     DestinationScreen.DetailScreen.withArgs(viewAction.eventId.toString())
                 )
             }
+
             is NewEventAction.ShowToast -> {
                 Toast.makeText(context, viewAction.message, Toast.LENGTH_LONG).show()
             }
+
             NewEventAction.NavigateBack -> navController.popBackStack()
         }
     }
@@ -118,7 +122,8 @@ private fun NewEventContent(
                     start = dimensionResource(id = R.dimen.step4),
                     end = dimensionResource(id = R.dimen.step4),
                     bottom = dimensionResource(id = R.dimen.step4),
-                    top = it.calculateTopPadding())
+                    top = it.calculateTopPadding()
+                )
                 .verticalScroll(rememberScrollState())
         ) {
             EventTitle(
@@ -309,18 +314,32 @@ private fun TimeStartPicker(
                 effectHandler.invoke(NewEventEffect.OnCloseTimeStartDialog)
             },
             autoDismiss = false,
-
+            backgroundColor = MaterialTheme.colorScheme.background
         ) {
             timepicker(
                 initialTime = timeStart,
                 title = stringResource(R.string.start_time_picker_title),
-                is24HourClock = true
+                is24HourClock = true,
+                colors = TimePickerDefaults.colors(
+                    activeTextColor = MaterialTheme.colorScheme.onPrimary,
+                    activeBackgroundColor = MaterialTheme.colorScheme.primary,
+                    headerTextColor = MaterialTheme.colorScheme.onBackground,
+                    selectorTextColor = MaterialTheme.colorScheme.onPrimary,
+                    selectorColor = MaterialTheme.colorScheme.primary,
+                    inactivePeriodBackground = MaterialTheme.colorScheme.primaryContainer,
+                    inactiveTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    inactiveBackgroundColor = MaterialTheme.colorScheme.primaryContainer,
+                )
             ) {
                 effectHandler.invoke(NewEventEffect.OnConfirmTimeStartDialog(it))
             }
         }
     }
-    if (showDialog) { timeDialogState.show() } else { timeDialogState.hide() }
+    if (showDialog) {
+        timeDialogState.show()
+    } else {
+        timeDialogState.hide()
+    }
 }
 
 @Composable
@@ -355,18 +374,33 @@ private fun TimeFinishPicker(
             onCloseRequest = {
                 effectHandler.invoke(NewEventEffect.OnCloseTimeFinishDialog)
             },
-            autoDismiss = true
+            autoDismiss = false,
+            backgroundColor = MaterialTheme.colorScheme.background
         ) {
             timepicker(
                 initialTime = timeFinish,
                 title = stringResource(R.string.finish_time_picker_time),
-                is24HourClock = true
+                is24HourClock = true,
+                colors = TimePickerDefaults.colors(
+                    activeTextColor = MaterialTheme.colorScheme.onPrimary,
+                    activeBackgroundColor = MaterialTheme.colorScheme.primary,
+                    headerTextColor = MaterialTheme.colorScheme.onBackground,
+                    selectorTextColor = MaterialTheme.colorScheme.onPrimary,
+                    selectorColor = MaterialTheme.colorScheme.primary,
+                    inactivePeriodBackground = MaterialTheme.colorScheme.primaryContainer,
+                    inactiveTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    inactiveBackgroundColor = MaterialTheme.colorScheme.primaryContainer,
+                )
             ) {
                 effectHandler.invoke(NewEventEffect.OnConfirmTimeFinishDialog(it))
             }
         }
     }
-    if (showDialog) { timeDialogState.show() } else { timeDialogState.hide() }
+    if (showDialog) {
+        timeDialogState.show()
+    } else {
+        timeDialogState.hide()
+    }
 }
 
 @Composable
@@ -408,17 +442,30 @@ private fun EventDate(
             onCloseRequest = {
                 effectHandler.invoke(NewEventEffect.OnCloseDateDialog)
             },
-            autoDismiss = false
+            autoDismiss = false,
+            backgroundColor = MaterialTheme.colorScheme.background
         ) {
             datepicker(
                 initialDate = date,
                 title = stringResource(R.string.date_picker_title),
+                colors = DatePickerDefaults.colors(
+                    headerBackgroundColor = MaterialTheme.colorScheme.primary,
+                    headerTextColor = MaterialTheme.colorScheme.onPrimary,
+                    calendarHeaderTextColor = MaterialTheme.colorScheme.primary,
+                    dateActiveBackgroundColor = MaterialTheme.colorScheme.primary,
+                    dateActiveTextColor = MaterialTheme.colorScheme.onPrimary,
+                    dateInactiveTextColor = MaterialTheme.colorScheme.onBackground,
+                )
             ) {
                 effectHandler.invoke(NewEventEffect.OnConfirmDateDialog(it))
             }
         }
     }
-    if (showDialog) { dateDialogState.show() } else { dateDialogState.hide() }
+    if (showDialog) {
+        dateDialogState.show()
+    } else {
+        dateDialogState.hide()
+    }
 }
 
 @Composable

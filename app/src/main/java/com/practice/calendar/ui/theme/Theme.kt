@@ -59,7 +59,6 @@ private val LightColorScheme = lightColorScheme(
         surfaceVariant = LightSurfaceVariant,
         onSurfaceVariant = LightOnSurfaceVariant
 )
-
 @Composable
 fun CalendarTheme(
         darkTheme: Boolean = isSystemInDarkTheme(),

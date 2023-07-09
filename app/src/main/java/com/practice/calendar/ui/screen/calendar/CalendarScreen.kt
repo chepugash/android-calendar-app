@@ -25,6 +25,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -47,10 +48,14 @@ import androidx.navigation.navOptions
 import com.practice.calendar.R
 import com.practice.calendar.domain.entity.EventInfo
 import com.practice.calendar.ui.navigation.DestinationScreen
+import com.practice.calendar.ui.theme.LightOnBackground
+import com.practice.calendar.ui.theme.LightOnPrimary
+import com.practice.calendar.ui.theme.LightPrimary
 import com.practice.calendar.util.formatToDate
 import com.practice.calendar.util.formatToTime
 import com.practice.calendar.util.timeInMinutes
 import com.vanpra.composematerialdialogs.MaterialDialog
+import com.vanpra.composematerialdialogs.datetime.date.DatePickerDefaults
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import org.koin.androidx.compose.koinViewModel
@@ -217,11 +222,20 @@ fun DatePicker(
         onCloseRequest = {
             effectHandler.invoke(CalendarEffect.OnCloseDialog)
         },
-        autoDismiss = false
+        autoDismiss = false,
+        backgroundColor = MaterialTheme.colorScheme.background
     ) {
         datepicker(
             initialDate = viewState.date,
             title = stringResource(R.string.date_picker_title),
+            colors = DatePickerDefaults.colors(
+                headerBackgroundColor = MaterialTheme.colorScheme.primary,
+                headerTextColor = MaterialTheme.colorScheme.onPrimary,
+                calendarHeaderTextColor = MaterialTheme.colorScheme.primary,
+                dateActiveBackgroundColor = MaterialTheme.colorScheme.primary,
+                dateActiveTextColor = MaterialTheme.colorScheme.onPrimary,
+                dateInactiveTextColor = MaterialTheme.colorScheme.onBackground,
+            )
         ) {
             effectHandler.invoke(CalendarEffect.OnConfirmDialog(it))
         }
