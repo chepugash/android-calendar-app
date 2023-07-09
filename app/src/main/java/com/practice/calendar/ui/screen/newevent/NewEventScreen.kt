@@ -39,6 +39,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.practice.calendar.R
 import com.practice.calendar.ui.navigation.DestinationScreen
+import com.practice.calendar.ui.screen.components.CustomDatePickerDialog
+import com.practice.calendar.ui.screen.components.CustomTimePicker
 import com.practice.calendar.util.formatToDate
 import com.practice.calendar.util.formatToTime
 import com.vanpra.composematerialdialogs.MaterialDialog
@@ -259,10 +261,19 @@ private fun EventTime(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            TimeStartPicker(
-                timeStart = viewState.timeStart,
+            CustomTimePicker(
+                title = stringResource(id = R.string.start_time_picker_title),
+                time = viewState.timeStart,
                 showDialog = viewState.showTimeStartDialog,
-                effectHandler = effectHandler
+                onOpen = {
+                    effectHandler.invoke(NewEventEffect.OnTimeStartClick)
+                },
+                onClose = {
+                    effectHandler.invoke(NewEventEffect.OnCloseTimeStartDialog)
+                },
+                onConfirm = {
+                    effectHandler.invoke(NewEventEffect.OnConfirmTimeStartDialog(it))
+                }
             )
             Text(
                 text = stringResource(R.string.time_divider),
@@ -270,146 +281,21 @@ private fun EventTime(
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
             )
-            TimeFinishPicker(
-                timeFinish = viewState.timeFinish,
+            CustomTimePicker(
+                title = stringResource(id = R.string.finish_time_picker_title),
+                time = viewState.timeFinish,
                 showDialog = viewState.showTimeFinishDialog,
-                effectHandler = effectHandler
-            )
-        }
-    }
-}
-
-@Composable
-private fun TimeStartPicker(
-    timeStart: LocalTime,
-    showDialog: Boolean,
-    effectHandler: (NewEventEffect) -> Unit
-) {
-    val timeDialogState = rememberMaterialDialogState()
-    Row(
-        modifier = Modifier.wrapContentWidth()
-    ) {
-        TextButton(
-            onClick = {
-                effectHandler.invoke(NewEventEffect.OnTimeStartClick)
-            },
-            modifier = Modifier.wrapContentWidth()
-        ) {
-            Text(
-                text = timeStart.formatToTime(),
-                style = MaterialTheme.typography.titleLarge
-            )
-        }
-        MaterialDialog(
-            dialogState = timeDialogState,
-            buttons = {
-                positiveButton(
-                    text = stringResource(R.string.date_picker_positive),
-                    textStyle = MaterialTheme.typography.labelSmall
-                )
-                negativeButton(
-                    text = stringResource(R.string.date_picker_negative),
-                    textStyle = MaterialTheme.typography.labelSmall
-                ) {
-                    effectHandler.invoke(NewEventEffect.OnCloseTimeStartDialog)
-                }
-            },
-            onCloseRequest = {
-                effectHandler.invoke(NewEventEffect.OnCloseTimeStartDialog)
-            },
-            autoDismiss = false,
-            backgroundColor = MaterialTheme.colorScheme.background
-        ) {
-            timepicker(
-                initialTime = timeStart,
-                title = stringResource(R.string.start_time_picker_title),
-                is24HourClock = true,
-                colors = TimePickerDefaults.colors(
-                    activeTextColor = MaterialTheme.colorScheme.onPrimary,
-                    activeBackgroundColor = MaterialTheme.colorScheme.primary,
-                    headerTextColor = MaterialTheme.colorScheme.onBackground,
-                    selectorTextColor = MaterialTheme.colorScheme.onPrimary,
-                    selectorColor = MaterialTheme.colorScheme.primary,
-                    inactivePeriodBackground = MaterialTheme.colorScheme.primaryContainer,
-                    inactiveTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    inactiveBackgroundColor = MaterialTheme.colorScheme.primaryContainer,
-                )
-            ) {
-                effectHandler.invoke(NewEventEffect.OnConfirmTimeStartDialog(it))
-            }
-        }
-    }
-    if (showDialog) {
-        timeDialogState.show()
-    } else {
-        timeDialogState.hide()
-    }
-}
-
-@Composable
-private fun TimeFinishPicker(
-    timeFinish: LocalTime,
-    showDialog: Boolean,
-    effectHandler: (NewEventEffect) -> Unit
-) {
-    val timeDialogState = rememberMaterialDialogState()
-    Row(
-        modifier = Modifier.wrapContentWidth()
-    ) {
-        TextButton(
-            onClick = {
-                effectHandler.invoke(NewEventEffect.OnTimeFinishClick)
-            },
-            modifier = Modifier.wrapContentWidth()
-        ) {
-            Text(
-                text = timeFinish.formatToTime(),
-                style = MaterialTheme.typography.titleLarge
-            )
-        }
-        MaterialDialog(
-            dialogState = timeDialogState,
-            buttons = {
-                positiveButton(
-                    text = stringResource(R.string.date_picker_positive),
-                    textStyle = MaterialTheme.typography.labelSmall
-                )
-                negativeButton(
-                    text = stringResource(R.string.date_picker_negative),
-                    textStyle = MaterialTheme.typography.labelSmall
-                ) {
+                onOpen = {
+                    effectHandler.invoke(NewEventEffect.OnTimeFinishClick)
+                },
+                onClose = {
                     effectHandler.invoke(NewEventEffect.OnCloseTimeFinishDialog)
+                },
+                onConfirm = {
+                    effectHandler.invoke(NewEventEffect.OnConfirmTimeFinishDialog(it))
                 }
-            },
-            onCloseRequest = {
-                effectHandler.invoke(NewEventEffect.OnCloseTimeFinishDialog)
-            },
-            autoDismiss = false,
-            backgroundColor = MaterialTheme.colorScheme.background
-        ) {
-            timepicker(
-                initialTime = timeFinish,
-                title = stringResource(R.string.finish_time_picker_time),
-                is24HourClock = true,
-                colors = TimePickerDefaults.colors(
-                    activeTextColor = MaterialTheme.colorScheme.onPrimary,
-                    activeBackgroundColor = MaterialTheme.colorScheme.primary,
-                    headerTextColor = MaterialTheme.colorScheme.onBackground,
-                    selectorTextColor = MaterialTheme.colorScheme.onPrimary,
-                    selectorColor = MaterialTheme.colorScheme.primary,
-                    inactivePeriodBackground = MaterialTheme.colorScheme.primaryContainer,
-                    inactiveTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    inactiveBackgroundColor = MaterialTheme.colorScheme.primaryContainer,
-                )
-            ) {
-                effectHandler.invoke(NewEventEffect.OnConfirmTimeFinishDialog(it))
-            }
+            )
         }
-    }
-    if (showDialog) {
-        timeDialogState.show()
-    } else {
-        timeDialogState.hide()
     }
 }
 
@@ -441,41 +327,16 @@ private fun EventDate(
                 style = MaterialTheme.typography.titleLarge
             )
         }
-        MaterialDialog(
+        CustomDatePickerDialog(
+            date = date,
             dialogState = dateDialogState,
-            buttons = {
-                positiveButton(
-                    text = stringResource(R.string.date_picker_positive),
-                    textStyle = MaterialTheme.typography.labelSmall,
-                )
-                negativeButton(
-                    text = stringResource(R.string.date_picker_negative),
-                    textStyle = MaterialTheme.typography.labelSmall
-                ) {
-                    effectHandler.invoke(NewEventEffect.OnCloseDateDialog)
-                }
-            },
-            onCloseRequest = {
+            onClose = {
                 effectHandler.invoke(NewEventEffect.OnCloseDateDialog)
             },
-            autoDismiss = false,
-            backgroundColor = MaterialTheme.colorScheme.background
-        ) {
-            datepicker(
-                initialDate = date,
-                title = stringResource(R.string.date_picker_title),
-                colors = DatePickerDefaults.colors(
-                    headerBackgroundColor = MaterialTheme.colorScheme.primary,
-                    headerTextColor = MaterialTheme.colorScheme.onPrimary,
-                    calendarHeaderTextColor = MaterialTheme.colorScheme.primary,
-                    dateActiveBackgroundColor = MaterialTheme.colorScheme.primary,
-                    dateActiveTextColor = MaterialTheme.colorScheme.onPrimary,
-                    dateInactiveTextColor = MaterialTheme.colorScheme.onBackground,
-                )
-            ) {
+            onConfirm = {
                 effectHandler.invoke(NewEventEffect.OnConfirmDateDialog(it))
             }
-        }
+        )
     }
     if (showDialog) {
         dateDialogState.show()
@@ -511,8 +372,7 @@ private fun EventDescription(
             },
             minLines = 4,
             maxLines = 14,
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,6 +31,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -106,7 +108,6 @@ private fun DetailContent(
             topBar = {
                 DetailToolbar(
                     eventId = info.id,
-                    title = info.name,
                     effectHandler = effectHandler
                 )
             }
@@ -122,18 +123,18 @@ private fun DetailContent(
                     )
             ) {
                 EventTitle(title = info.name)
-                Spacer(modifier = Modifier.padding(dimensionResource(id = R.dimen.step2)))
+                Divider(modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.step4)))
 
                 EventTime(
                     start = info.dateStart.formatToTime(),
                     finish = info.dateFinish.formatToTime()
                 )
-                Spacer(modifier = Modifier.padding(dimensionResource(id = R.dimen.step2)))
+                Divider(modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.step4)))
 
                 EventDate(
                     date = info.dateStart.formatToDate()
                 )
-                Spacer(modifier = Modifier.padding(dimensionResource(id = R.dimen.step2)))
+                Divider(modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.step4)))
 
                 EventDescription(desc = info.description)
             }
@@ -145,13 +146,12 @@ private fun DetailContent(
 @Composable
 fun DetailToolbar(
     eventId: Long,
-    title: String,
     effectHandler: (DetailEffect) -> Unit
 ) {
     TopAppBar(
         title = {
             Text(
-                text = title,
+                text = stringResource(R.string.event),
                 style = MaterialTheme.typography.bodyLarge
             )
         },
@@ -184,12 +184,22 @@ fun DetailToolbar(
 
 @Composable
 fun EventTitle(title: String) {
-    Box(
-        modifier = Modifier.wrapContentSize()
+    Row(
+        modifier = Modifier.fillMaxWidth()
     ) {
+        Icon(
+            painterResource(id = R.drawable.ic_title),
+            contentDescription = stringResource(R.string.title_icon_in_details),
+            modifier = Modifier
+                .padding(end = dimensionResource(id = R.dimen.step2))
+                .align(Alignment.CenterVertically)
+        )
         Text(
             text = title,
-            style = MaterialTheme.typography.titleLarge
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+            maxLines = 1
         )
     }
 }
@@ -209,26 +219,34 @@ fun EventTime(start: String, finish: String) {
                 .padding(end = dimensionResource(id = R.dimen.step2))
                 .align(Alignment.CenterVertically)
         )
-        Text(
-            text = start,
-            style = MaterialTheme.typography.bodyLarge
-        )
-        Text(
-            text = stringResource(R.string.time_divider),
-            style = MaterialTheme.typography.bodyLarge,
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier
-                .padding(horizontal = dimensionResource(id = R.dimen.step2))
-        )
-        Text(
-            text = finish,
-            style = MaterialTheme.typography.bodyLarge
-        )
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = start,
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Text(
+                text = stringResource(R.string.time_divider),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier
+                    .padding(horizontal = dimensionResource(id = R.dimen.step2))
+            )
+            Text(
+                text = finish,
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
     }
 }
 
 @Composable
 fun EventDate(date: String) {
-    Row {
+    Row(
+        modifier = Modifier.fillMaxWidth()
+    ) {
         Icon(
             painterResource(id = R.drawable.ic_calendar),
             contentDescription = stringResource(R.string.calendar_icon_in_details),
@@ -238,7 +256,9 @@ fun EventDate(date: String) {
         )
         Text(
             text = date,
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }

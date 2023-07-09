@@ -47,6 +47,7 @@ import androidx.navigation.navOptions
 import com.practice.calendar.R
 import com.practice.calendar.domain.entity.EventInfo
 import com.practice.calendar.ui.navigation.DestinationScreen
+import com.practice.calendar.ui.screen.components.CustomDatePickerDialog
 import com.practice.calendar.util.formatToDate
 import com.practice.calendar.util.formatToTime
 import com.practice.calendar.util.timeInMinutes
@@ -207,41 +208,16 @@ fun DatePicker(
             )
         }
     }
-    MaterialDialog(
+    CustomDatePickerDialog(
+        date = viewState.date,
         dialogState = dateDialogState,
-        buttons = {
-            positiveButton(
-                text = stringResource(R.string.date_picker_positive),
-                textStyle = MaterialTheme.typography.labelSmall
-            )
-            negativeButton(
-                text = stringResource(R.string.date_picker_negative),
-                textStyle = MaterialTheme.typography.labelSmall
-            ) {
-                effectHandler.invoke(CalendarEffect.OnCloseDialog)
-            }
-        },
-        onCloseRequest = {
+        onClose = {
             effectHandler.invoke(CalendarEffect.OnCloseDialog)
         },
-        autoDismiss = false,
-        backgroundColor = MaterialTheme.colorScheme.background
-    ) {
-        datepicker(
-            initialDate = viewState.date,
-            title = stringResource(R.string.date_picker_title),
-            colors = DatePickerDefaults.colors(
-                headerBackgroundColor = MaterialTheme.colorScheme.primary,
-                headerTextColor = MaterialTheme.colorScheme.onPrimary,
-                calendarHeaderTextColor = MaterialTheme.colorScheme.primary,
-                dateActiveBackgroundColor = MaterialTheme.colorScheme.primary,
-                dateActiveTextColor = MaterialTheme.colorScheme.onPrimary,
-                dateInactiveTextColor = MaterialTheme.colorScheme.onBackground,
-            )
-        ) {
+        onConfirm = {
             effectHandler.invoke(CalendarEffect.OnConfirmDialog(it))
         }
-    }
+    )
     if (viewState.showDialog) {
         dateDialogState.show()
     } else {
