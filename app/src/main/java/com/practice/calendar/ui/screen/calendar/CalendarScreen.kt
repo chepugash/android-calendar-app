@@ -126,7 +126,7 @@ private fun CalendarScreenActions(
             null -> Unit
             is CalendarAction.NavigateDetail -> {
                 navController.navigate(
-                    DestinationScreen.DetailScreen.withArgs(viewAction.eventId.toString())
+                    DestinationScreen.DetailScreen.withArgs(viewAction.eventId.toString()),
                 )
             }
             is CalendarAction.ShowToast -> {
@@ -268,8 +268,8 @@ fun EventCard(
                 style = MaterialTheme.typography.bodySmall
             )
             Text(
-                text = "${eventInfo.dateStart.formatToTime()}" +
-                        " - ${eventInfo.dateFinish.formatToTime()}",
+                text = eventInfo.dateStart.formatToTime() +
+                        " - " + eventInfo.dateFinish.formatToTime(),
                 maxLines = 1,
                 style = MaterialTheme.typography.bodySmall
             )
