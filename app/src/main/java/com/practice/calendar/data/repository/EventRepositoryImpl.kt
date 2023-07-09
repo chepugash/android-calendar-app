@@ -1,11 +1,7 @@
 package com.practice.calendar.data.repository
 
 import com.practice.calendar.data.local.dao.EventDao
-import com.practice.calendar.data.mapper.localDateToTimestamp
-import com.practice.calendar.data.mapper.toEventDbEntity
-import com.practice.calendar.data.mapper.toEventDbEntityList
-import com.practice.calendar.data.mapper.toEventInfoFlow
-import com.practice.calendar.data.mapper.toEventInfoListFlow
+import com.practice.calendar.data.mapper.EventMapper
 import com.practice.calendar.data.remote.EventApi
 import com.practice.calendar.domain.entity.EventInfo
 import com.practice.calendar.domain.repository.EventRepository
@@ -15,23 +11,25 @@ import java.time.LocalDate
 class EventRepositoryImpl(
     private val api: EventApi,
     private val dao: EventDao,
+    private val eventMapper: EventMapper
 ) : EventRepository {
 
     override fun getEventsByDate(date: LocalDate): Flow<List<EventInfo>?> {
-        return dao.getByDate(localDateToTimestamp(date)).toEventInfoListFlow()
+        val events = dao.getByDate(eventMapper.localDateToTimestamp(date))
+        return eventMapper.eventDbEntityListFlowToEventInfoListFlow(events)
     }
 
     override suspend fun updateEventsFromRemote() {
         val remoteEvents = api.getEvents()
-        dao.saveEvents(remoteEvents.toEventDbEntityList())
+        dao.saveEvents(eventMapper.eventResponseEntityListToEventDbEntityList(remoteEvents))
     }
 
     override fun getEventById(eventId: Long): Flow<EventInfo?> {
-        return dao.getById(eventId).toEventInfoFlow()
+        return eventMapper.eventDbEntityFlowToEventInfoFlow(dao.getById(eventId))
     }
 
     override suspend fun createEvent(eventInfo: EventInfo): Long {
-        return dao.createEvent(eventInfo.toEventDbEntity())
+        return dao.createEvent(eventMapper.eventInfoToEventDbEntity(eventInfo))
     }
 
     override suspend fun deleteEvent(eventId: Long) {

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.practice.calendar.data.local.AppDatabase
 import com.practice.calendar.data.local.dao.EventDao
+import com.practice.calendar.data.mapper.EventMapper
 import com.practice.calendar.data.remote.EventApi
 import com.practice.calendar.data.remote.EventApiImpl
 import com.practice.calendar.data.repository.EventRepositoryImpl
@@ -13,7 +14,7 @@ import org.koin.dsl.module
 val repositoryModule = module {
 
     single<EventRepository> {
-        EventRepositoryImpl(api = get(), dao = get())
+        EventRepositoryImpl(api = get(), dao = get(), eventMapper = get())
     }
 
     single<EventApi> {
@@ -26,6 +27,10 @@ val repositoryModule = module {
 
     single<EventDao> {
         provideEventDao(appDatabase = get())
+    }
+
+    factory<EventMapper> {
+        EventMapper()
     }
 }
 
