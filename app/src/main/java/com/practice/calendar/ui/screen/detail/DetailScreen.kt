@@ -189,7 +189,6 @@ fun EventTitle(title: String) {
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),
-            maxLines = 1
         )
     }
 }
