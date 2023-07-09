@@ -21,4 +21,5 @@
     <string name="calendar_icon_in_new_event" translatable="false">calendar icon in new event</string>
     <string name="new_event_add_description">Add a description:</string>
     <string name="description_edit_icon_in_new_event" translatable="false">description edit icon in new event</string>
+    <string name="more_icon_in_calendar" translatable="false">more icon in calendar</string>
 </resources>

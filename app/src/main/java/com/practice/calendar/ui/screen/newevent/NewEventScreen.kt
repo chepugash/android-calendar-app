@@ -1,5 +1,6 @@
 package com.practice.calendar.ui.screen.newevent
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +20,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -31,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -40,6 +43,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.practice.calendar.R
 import com.practice.calendar.ui.navigation.DestinationScreen
+import com.practice.calendar.ui.screen.detail.DetailToolbar
 import com.practice.calendar.util.formatToDate
 import com.practice.calendar.util.formatToTime
 import com.vanpra.composematerialdialogs.MaterialDialog
@@ -101,34 +105,40 @@ private fun NewEventContent(
     viewState: NewEventState,
     effectHandler: (NewEventEffect) -> Unit
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize()
+    Scaffold(
+        topBar = {
+            NewEventToolbar(effectHandler)
+        },
     ) {
-        NewEventToolbar(effectHandler)
+        it.calculateTopPadding()
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(
+                    start = dimensionResource(id = R.dimen.step4),
+                    end = dimensionResource(id = R.dimen.step4),
+                    bottom = dimensionResource(id = R.dimen.step4),
+                    top = it.calculateTopPadding())
                 .verticalScroll(rememberScrollState())
         ) {
             EventTitle(
                 name = viewState.name,
                 effectHandler = effectHandler
             )
-            Divider(modifier = Modifier.padding(vertical = 16.dp))
+            Divider(modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.step4)))
 
             EventTime(
                 viewState = viewState,
                 effectHandler = effectHandler
             )
-            Divider(modifier = Modifier.padding(vertical = 16.dp))
+            Divider(modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.step4)))
 
             EventDate(
                 date = viewState.date,
                 showDialog = viewState.showDateDialog,
                 effectHandler = effectHandler
             )
-            Divider(modifier = Modifier.padding(vertical = 16.dp))
+            Divider(modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.step4)))
 
             EventDescription(
                 desc = viewState.description,
@@ -147,7 +157,7 @@ private fun NewEventContent(
                         .wrapContentHeight()
                         .fillMaxWidth()
                         .align(Alignment.BottomCenter)
-                        .padding(top = 8.dp)
+                        .padding(top = dimensionResource(id = R.dimen.step2))
                 ) {
                     Text(
                         text = stringResource(R.string.new_event_screen_confirm_button),
@@ -197,7 +207,7 @@ private fun EventTitle(
             text = stringResource(R.string.new_event_add_name),
             fontSize = 18.sp,
             modifier = Modifier
-                .padding(bottom = 8.dp)
+                .padding(bottom = dimensionResource(id = R.dimen.step2))
                 .align(Alignment.CenterHorizontally)
         )
         OutlinedTextField(
@@ -238,7 +248,7 @@ private fun EventTime(
             painterResource(id = R.drawable.ic_time),
             contentDescription = stringResource(R.string.time_icon_in_new_event),
             modifier = Modifier
-                .padding(end = 8.dp)
+                .padding(end = dimensionResource(id = R.dimen.step2))
                 .align(Alignment.CenterVertically)
         )
         Row(
@@ -373,7 +383,7 @@ private fun EventDate(
             painterResource(id = R.drawable.ic_calendar),
             contentDescription = stringResource(R.string.calendar_icon_in_new_event),
             modifier = Modifier
-                .padding(end = 8.dp)
+                .padding(end = dimensionResource(id = R.dimen.step2))
                 .align(Alignment.CenterVertically)
         )
         TextButton(
@@ -421,7 +431,7 @@ private fun EventDescription(
             text = stringResource(R.string.new_event_add_description),
             fontSize = 18.sp,
             modifier = Modifier
-                .padding(bottom = 8.dp)
+                .padding(bottom = dimensionResource(id = R.dimen.step2))
                 .align(Alignment.CenterHorizontally)
         )
         OutlinedTextField(

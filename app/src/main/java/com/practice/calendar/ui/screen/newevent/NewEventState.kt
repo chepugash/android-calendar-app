@@ -15,5 +15,4 @@ data class NewEventState(
     val showDateDialog: Boolean = false,
     val showTimeStartDialog: Boolean = false,
     val showTimeFinishDialog: Boolean = false,
-    val error: String? = null
 )

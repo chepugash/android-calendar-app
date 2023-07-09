@@ -1,5 +1,6 @@
 package com.practice.calendar.ui.screen.detail
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -23,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -32,6 +35,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.practice.calendar.R
 import com.practice.calendar.ui.navigation.DestinationScreen
+import com.practice.calendar.ui.screen.calendar.AddButton
+import com.practice.calendar.ui.screen.calendar.CalendarToolbar
 import com.practice.calendar.util.formatToDate
 import com.practice.calendar.util.formatToTime
 import org.koin.androidx.compose.koinViewModel
@@ -77,6 +82,7 @@ private fun DetailScreenActions(
                     inclusive = false
                 )
             }
+
             is DetailAction.ShowToast -> {
                 Toast.makeText(context, viewAction.message, Toast.LENGTH_LONG).show()
             }
@@ -93,32 +99,41 @@ private fun DetailContent(
     LaunchedEffect(effectHandler) {
         effectHandler.invoke(DetailEffect.ShowEvent(eventId))
     }
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        val info = viewState.eventInfo
-        if (info != null) {
-            DetailToolbar(
-                eventId = info.id,
-                title = info.name,
-                effectHandler = effectHandler
-            )
+    val info = viewState.eventInfo
+    if (info != null) {
+        Scaffold(
+            topBar = {
+                DetailToolbar(
+                    eventId = info.id,
+                    title = info.name,
+                    effectHandler = effectHandler
+                )
+            }
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
+                    .padding(
+                        start = dimensionResource(id = R.dimen.step4),
+                        end = dimensionResource(id = R.dimen.step4),
+                        bottom = dimensionResource(id = R.dimen.step4),
+                        top = it.calculateTopPadding()
+                    )
             ) {
                 EventTitle(title = info.name)
-                Spacer(modifier = Modifier.padding(8.dp))
+                Spacer(modifier = Modifier.padding(dimensionResource(id = R.dimen.step2)))
+
                 EventTime(
                     start = info.dateStart.formatToTime(),
                     finish = info.dateFinish.formatToTime()
                 )
-                Spacer(modifier = Modifier.padding(8.dp))
+                Spacer(modifier = Modifier.padding(dimensionResource(id = R.dimen.step2)))
+
                 EventDate(
                     date = info.dateStart.formatToDate()
                 )
-                Spacer(modifier = Modifier.padding(8.dp))
+                Spacer(modifier = Modifier.padding(dimensionResource(id = R.dimen.step2)))
+
                 EventDescription(desc = info.description)
             }
         }
@@ -191,7 +206,7 @@ fun EventTime(start: String, finish: String) {
             painterResource(id = R.drawable.ic_time),
             contentDescription = stringResource(R.string.watches_icon_in_details),
             modifier = Modifier
-                .padding(end = 8.dp)
+                .padding(end = dimensionResource(id = R.dimen.step2))
                 .align(Alignment.CenterVertically)
         )
         Text(
@@ -202,7 +217,7 @@ fun EventTime(start: String, finish: String) {
             text = stringResource(R.string.time_divider),
             fontSize = 24.sp,
             modifier = Modifier
-                .padding(start = 8.dp, end = 8.dp)
+                .padding(horizontal = dimensionResource(id = R.dimen.step2))
         )
         Text(
             text = finish,
@@ -218,7 +233,7 @@ fun EventDate(date: String) {
             painterResource(id = R.drawable.ic_calendar),
             contentDescription = stringResource(R.string.calendar_icon_in_details),
             modifier = Modifier
-                .padding(end = 8.dp)
+                .padding(end = dimensionResource(id = R.dimen.step2))
                 .align(Alignment.CenterVertically)
         )
         Text(

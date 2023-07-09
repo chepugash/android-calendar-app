@@ -2,6 +2,7 @@
 
 package com.practice.calendar.ui.screen.calendar
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -24,6 +25,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -34,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -51,6 +54,9 @@ import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import org.koin.androidx.compose.koinViewModel
+
+private const val HOURS_IN_DAY = 24
+private const val COUNT_OF_DIGITS = 10
 
 @Composable
 fun CalendarScreen(
@@ -72,24 +78,32 @@ fun CalendarScreen(
     )
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 private fun CalendarContent(
     viewState: CalendarState,
     effectHandler: (CalendarEffect) -> Unit
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize()
+    Scaffold(
+        topBar = {
+            CalendarToolbar(
+                viewState = viewState,
+                effectHandler = effectHandler
+            )
+        },
+        floatingActionButton = {
+            AddButton(effectHandler = effectHandler)
+        },
     ) {
-        CalendarToolbar(
-            viewState = viewState,
-            effectHandler = effectHandler
-        )
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(top = it.calculateTopPadding())
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(start = 16.dp, end = 16.dp)
-                    .height(1440.dp + 30.dp)
+                    .padding(horizontal = dimensionResource(id = R.dimen.step4))
+                    .height(dimensionResource(id = R.dimen.calendar_height))
                     .verticalScroll(rememberScrollState())
             ) {
                 HoursList()
@@ -98,7 +112,6 @@ private fun CalendarContent(
                     EventList(viewState = viewState, effectHandler = effectHandler)
                 }
             }
-            AddButton(effectHandler = effectHandler)
         }
     }
 }
@@ -117,16 +130,14 @@ private fun CalendarScreenActions(
                     DestinationScreen.DetailScreen.withArgs(viewAction.eventId.toString())
                 )
             }
+            is CalendarAction.ShowToast -> {
+                Toast.makeText(context, viewAction.message, Toast.LENGTH_LONG).show()
+            }
             CalendarAction.NavigateAddEvent -> {
                 navController.navigate(
                     DestinationScreen.NewEventScreen.route,
-                    navOptions = navOptions {
-                        popUpToRoute
-                    }
+                    navOptions = navOptions { popUpToRoute }
                 )
-            }
-            is CalendarAction.ShowToast -> {
-                Toast.makeText(context, viewAction.message, Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -142,7 +153,6 @@ fun AddButton(effectHandler: (CalendarEffect) -> Unit) {
             shape = CircleShape,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(16.dp)
         ) {
             Icon(
                 painterResource(id = R.drawable.ic_add),
@@ -154,7 +164,10 @@ fun AddButton(effectHandler: (CalendarEffect) -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CalendarToolbar(viewState: CalendarState, effectHandler: (CalendarEffect) -> Unit) {
+fun CalendarToolbar(
+    viewState: CalendarState,
+    effectHandler: (CalendarEffect) -> Unit
+) {
     TopAppBar(
         title = {
             DatePicker(
@@ -166,9 +179,10 @@ fun CalendarToolbar(viewState: CalendarState, effectHandler: (CalendarEffect) ->
             Icon(
                 painterResource(id = R.drawable.ic_calendar),
                 contentDescription = stringResource(R.string.toolbar_calendar_icon),
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+                modifier = Modifier
+                    .padding(horizontal = dimensionResource(id = R.dimen.step4))
             )
-        }
+        },
     )
 }
 
@@ -185,6 +199,10 @@ fun DatePicker(
             Text(
                 text = viewState.date.formatToDate(),
                 fontSize = 24.sp,
+            )
+            Icon(
+                painter = painterResource(id = R.drawable.ic_more),
+                contentDescription = stringResource(R.string.more_icon_in_calendar)
             )
         }
     }
@@ -208,7 +226,11 @@ fun DatePicker(
             effectHandler.invoke(CalendarEffect.OnConfirmDialog(it))
         }
     }
-    if (viewState.showDialog) { dateDialogState.show() } else { dateDialogState.hide() }
+    if (viewState.showDialog) {
+        dateDialogState.show()
+    } else {
+        dateDialogState.hide()
+    }
 }
 
 @Composable
@@ -222,7 +244,7 @@ fun EventList(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            repeat(events.size) {index ->
+            repeat(events.size) { index ->
                 EventCard(
                     eventInfo = events[index],
                     onCLick = {
@@ -244,16 +266,24 @@ fun EventCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .offset(y = minuteStart.dp + 30.dp)
+            .offset(y = minuteStart.dp + dimensionResource(id = R.dimen.calendar_half_of_hour))
             .height((minuteFinish - minuteStart).dp)
-            .padding(start = 4.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .padding(start = dimensionResource(id = R.dimen.step2))
+            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.step3)))
             .clickable { onCLick.invoke(eventInfo.id) }
     ) {
-        Column{
-            Text(text = eventInfo.name)
+        Column(
+            modifier = Modifier
+                .padding(dimensionResource(id = R.dimen.step1))
+        ) {
             Text(
-                text = "${eventInfo.dateStart.formatToTime()} - ${eventInfo.dateFinish.formatToTime()}"
+                text = eventInfo.name,
+                maxLines = 1,
+                fontSize = 14.sp
+            )
+            Text(
+                text = "${eventInfo.dateStart.formatToTime()} - ${eventInfo.dateFinish.formatToTime()}",
+                fontSize = 14.sp
             )
         }
     }
@@ -264,13 +294,13 @@ fun HoursList() {
     LazyColumn(
         modifier = Modifier
             .wrapContentWidth()
-            .height(1440.dp + 30.dp)
+            .height(dimensionResource(id = R.dimen.calendar_height))
     ) {
-        items(24) { index ->
+        items(HOURS_IN_DAY) { index ->
             Box(
-                modifier = Modifier.height(60.dp)
+                modifier = Modifier.height(dimensionResource(id = R.dimen.calendar_hour))
             ) {
-                val formattedIndex = if (index < 10) {
+                val formattedIndex = if (index < COUNT_OF_DIGITS) {
                     "0$index:00"
                 } else {
                     "$index:00"
@@ -289,13 +319,13 @@ fun TimeTable() {
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 8.dp)
-            .height(1440.dp + 30.dp)
+            .padding(start = dimensionResource(id = R.dimen.step2))
+            .height(dimensionResource(id = R.dimen.calendar_height))
     ) {
-        items(24) { _ ->
+        items(HOURS_IN_DAY) { _ ->
             Box(
                 modifier = Modifier
-                    .height(60.dp)
+                    .height(dimensionResource(id = R.dimen.calendar_hour))
             ) {
                 Divider(
                     modifier = Modifier
