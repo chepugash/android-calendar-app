@@ -1,12 +1,6 @@
 package com.practice.calendar.domain.usecase
 
-import com.practice.calendar.domain.repository.EventRepository
+interface UpdateEventsFromRemoteUseCase {
 
-class UpdateEventsFromRemoteUseCase(
-    private val eventRepository: EventRepository
-) {
-
-    suspend operator fun invoke() {
-        eventRepository.updateEventsFromRemote()
-    }
+    suspend operator fun invoke()
 }
