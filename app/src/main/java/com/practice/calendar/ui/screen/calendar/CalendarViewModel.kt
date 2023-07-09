@@ -43,13 +43,17 @@ class CalendarViewModel(
 
     private fun getEvents(date: LocalDate) {
         viewModelScope.launch {
-            updateEventsFromRemoteUseCase()
-            getEventsUseCase(date).collect { list ->
-                _state.emit(
-                    _state.value.copy(
-                        eventInfoList = list?.toPersistentList()
+            try {
+                updateEventsFromRemoteUseCase()
+                getEventsUseCase(date).collect { list ->
+                    _state.emit(
+                        _state.value.copy(
+                            eventInfoList = list?.toPersistentList()
+                        )
                     )
-                )
+                }
+            } catch (e: Throwable) {
+                _action.emit(CalendarAction.ShowToast(e.message.toString()))
             }
         }
     }

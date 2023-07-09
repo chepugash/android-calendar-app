@@ -1,19 +1,21 @@
 package com.practice.calendar.ui.screen.detail
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -21,11 +23,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.practice.calendar.R
@@ -61,10 +63,58 @@ fun DetailScreen(
 }
 
 @Composable
+private fun DetailContent(
+    eventId: Long,
+    viewState: DetailState,
+    effectHandler: (DetailEffect) -> Unit
+) {
+    LaunchedEffect(effectHandler) {
+        effectHandler.invoke(DetailEffect.ShowEvent(eventId))
+    }
+    val info = viewState.eventInfo
+    if (info != null) {
+        Scaffold(
+            topBar = {
+                DetailToolbar(
+                    eventId = info.id,
+                    effectHandler = effectHandler
+                )
+            }
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        start = dimensionResource(id = R.dimen.step4),
+                        end = dimensionResource(id = R.dimen.step4),
+                        bottom = dimensionResource(id = R.dimen.step4),
+                        top = it.calculateTopPadding()
+                    )
+            ) {
+                EventTitle(title = info.name)
+                Divider(modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.step4)))
+
+                EventTime(
+                    start = info.dateStart.formatToTime(),
+                    finish = info.dateFinish.formatToTime()
+                )
+                Divider(modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.step4)))
+
+                EventDate(date = info.dateStart.formatToDate())
+                Divider(modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.step4)))
+
+                EventDescription(desc = info.description)
+            }
+        }
+    }
+}
+
+@Composable
 private fun DetailScreenActions(
     navController: NavController,
     viewAction: DetailAction?
 ) {
+    val context = LocalContext.current
     LaunchedEffect(viewAction) {
         when (viewAction) {
             null -> Unit
@@ -74,46 +124,9 @@ private fun DetailScreenActions(
                     inclusive = false
                 )
             }
-        }
-    }
-}
 
-@Composable
-private fun DetailContent(
-    eventId: Long,
-    viewState: DetailState,
-    effectHandler: (DetailEffect) -> Unit
-) {
-    LaunchedEffect(effectHandler) {
-        effectHandler.invoke(DetailEffect.ShowEvent(eventId))
-    }
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        val info = viewState.eventInfo
-        if (info != null) {
-            DetailToolbar(
-                eventId = info.id,
-                title = info.name,
-                effectHandler = effectHandler
-            )
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                EventTitle(title = info.name)
-                Spacer(modifier = Modifier.padding(8.dp))
-                EventTime(
-                    start = info.dateStart.formatToTime(),
-                    finish = info.dateFinish.formatToTime()
-                )
-                Spacer(modifier = Modifier.padding(8.dp))
-                EventDate(
-                    date = info.dateStart.formatToDate()
-                )
-                Spacer(modifier = Modifier.padding(8.dp))
-                EventDescription(desc = info.description)
+            is DetailAction.ShowToast -> {
+                Toast.makeText(context, viewAction.message, Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -123,14 +136,13 @@ private fun DetailContent(
 @Composable
 fun DetailToolbar(
     eventId: Long,
-    title: String,
     effectHandler: (DetailEffect) -> Unit
 ) {
     TopAppBar(
         title = {
             Text(
-                text = title,
-                fontSize = 24.sp
+                text = stringResource(R.string.event),
+                style = MaterialTheme.typography.bodyLarge
             )
         },
         navigationIcon = {
@@ -162,13 +174,21 @@ fun DetailToolbar(
 
 @Composable
 fun EventTitle(title: String) {
-    Box(
-        modifier = Modifier.wrapContentSize()
+    Row(
+        modifier = Modifier.fillMaxWidth()
     ) {
+        Icon(
+            painterResource(id = R.drawable.ic_title),
+            contentDescription = stringResource(R.string.title_icon_in_details),
+            modifier = Modifier
+                .padding(end = dimensionResource(id = R.dimen.step2))
+                .align(Alignment.CenterVertically)
+        )
         Text(
             text = title,
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
         )
     }
 }
@@ -185,39 +205,49 @@ fun EventTime(start: String, finish: String) {
             painterResource(id = R.drawable.ic_time),
             contentDescription = stringResource(R.string.watches_icon_in_details),
             modifier = Modifier
-                .padding(end = 8.dp)
+                .padding(end = dimensionResource(id = R.dimen.step2))
                 .align(Alignment.CenterVertically)
         )
-        Text(
-            text = start,
-            fontSize = 24.sp,
-        )
-        Text(
-            text = stringResource(R.string.time_divider),
-            fontSize = 24.sp,
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier
-                .padding(start = 8.dp, end = 8.dp)
-        )
-        Text(
-            text = finish,
-            fontSize = 24.sp
-        )
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = start,
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Text(
+                text = stringResource(R.string.time_divider),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier
+                    .padding(horizontal = dimensionResource(id = R.dimen.step2))
+            )
+            Text(
+                text = finish,
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
     }
 }
 
 @Composable
 fun EventDate(date: String) {
-    Row {
+    Row(
+        modifier = Modifier.fillMaxWidth()
+    ) {
         Icon(
             painterResource(id = R.drawable.ic_calendar),
             contentDescription = stringResource(R.string.calendar_icon_in_details),
             modifier = Modifier
-                .padding(end = 8.dp)
+                .padding(end = dimensionResource(id = R.dimen.step2))
                 .align(Alignment.CenterVertically)
         )
         Text(
             text = date,
-            fontSize = 24.sp
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
@@ -227,7 +257,7 @@ fun EventDescription(desc: String) {
     Box {
         Text(
             text = desc,
-            fontSize = 18.sp
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }

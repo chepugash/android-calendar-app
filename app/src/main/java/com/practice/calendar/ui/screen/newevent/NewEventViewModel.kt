@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practice.calendar.domain.entity.EventInfo
 import com.practice.calendar.domain.usecase.CreateEventUseCase
-import com.practice.calendar.domain.usecase.GetEventUseCase
+import com.practice.calendar.util.EmptyNameException
+import com.practice.calendar.util.TimeFinishLessThanStartException
+import com.practice.calendar.util.TimePeriodLessThanHalfHour
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -13,7 +15,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.LocalTime
 
 class NewEventViewModel(
@@ -177,16 +178,24 @@ class NewEventViewModel(
 
     private fun onConfirmClick() {
         viewModelScope.launch {
-            val createdId = createEventUseCase(EventInfo(
-                id = 0,
-                name = state.value.name,
-                dateStart = state.value.date.atTime(state.value.timeStart),
-                dateFinish = state.value.date.atTime(state.value.timeFinish),
-                description = state.value.description
-            ))
-            _action.emit(
-                NewEventAction.NavigateToDetail(createdId)
-            )
+            _action.emit(null)
+            try {
+                validate(state.value.name, state.value.timeStart, state.value.timeFinish)
+                val createdId = createEventUseCase(EventInfo(
+                    id = 0,
+                    name = state.value.name,
+                    dateStart = state.value.date.atTime(state.value.timeStart),
+                    dateFinish = state.value.date.atTime(state.value.timeFinish),
+                    description = state.value.description
+                ))
+                _action.emit(
+                    NewEventAction.NavigateToDetail(createdId)
+                )
+            } catch (e: Throwable) {
+                _action.emit(
+                    NewEventAction.ShowToast(e.message.toString())
+                )
+            }
         }
     }
 
@@ -195,6 +204,16 @@ class NewEventViewModel(
             _action.emit(
                 NewEventAction.NavigateBack
             )
+        }
+    }
+
+    private fun validate(name: String, timeStart: LocalTime, timeFinish: LocalTime) {
+        if (name.isBlank()) throw EmptyNameException("Name can not be empty")
+        if (timeFinish <= timeStart){
+            throw TimeFinishLessThanStartException("Finish time must be more than start time")
+        }
+        if (timeStart.hour == timeFinish.hour && timeFinish.minute - timeStart.minute < 30) {
+            throw TimePeriodLessThanHalfHour("Time period can not be less than 30 minutes")
         }
     }
 }

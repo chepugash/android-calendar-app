@@ -1,8 +1,8 @@
 package com.practice.calendar.ui.screen.newevent
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -18,42 +17,31 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.practice.calendar.R
-import com.practice.calendar.domain.entity.EventInfo
 import com.practice.calendar.ui.navigation.DestinationScreen
-import com.practice.calendar.ui.screen.calendar.CalendarAction
-import com.practice.calendar.ui.screen.calendar.CalendarEffect
-import com.practice.calendar.ui.screen.detail.DetailEffect
-import com.practice.calendar.ui.theme.CalendarTheme
+import com.practice.calendar.ui.screen.component.CustomDatePickerDialog
+import com.practice.calendar.ui.screen.component.CustomTimePicker
 import com.practice.calendar.util.formatToDate
-import com.practice.calendar.util.formatToTime
-import com.vanpra.composematerialdialogs.MaterialDialog
-import com.vanpra.composematerialdialogs.datetime.date.datepicker
-import com.vanpra.composematerialdialogs.datetime.time.timepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
 
 @Composable
 fun NewEventScreen(
@@ -84,6 +72,7 @@ private fun NewEventScreenActions(
     navController: NavController,
     viewAction: NewEventAction?,
 ) {
+    val context = LocalContext.current
     LaunchedEffect(viewAction) {
         when (viewAction) {
             null -> Unit
@@ -92,6 +81,11 @@ private fun NewEventScreenActions(
                     DestinationScreen.DetailScreen.withArgs(viewAction.eventId.toString())
                 )
             }
+
+            is NewEventAction.ShowToast -> {
+                Toast.makeText(context, viewAction.message, Toast.LENGTH_LONG).show()
+            }
+
             NewEventAction.NavigateBack -> navController.popBackStack()
         }
     }
@@ -102,34 +96,41 @@ private fun NewEventContent(
     viewState: NewEventState,
     effectHandler: (NewEventEffect) -> Unit
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize()
+    Scaffold(
+        topBar = {
+            NewEventToolbar(effectHandler)
+        },
     ) {
-        NewEventToolbar(effectHandler)
+        it.calculateTopPadding()
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(
+                    start = dimensionResource(id = R.dimen.step4),
+                    end = dimensionResource(id = R.dimen.step4),
+                    bottom = dimensionResource(id = R.dimen.step4),
+                    top = it.calculateTopPadding()
+                )
                 .verticalScroll(rememberScrollState())
         ) {
             EventTitle(
                 name = viewState.name,
                 effectHandler = effectHandler
             )
-            Divider(modifier = Modifier.padding(vertical = 16.dp))
+            Divider(modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.step4)))
 
             EventTime(
                 viewState = viewState,
                 effectHandler = effectHandler
             )
-            Divider(modifier = Modifier.padding(vertical = 16.dp))
+            Divider(modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.step4)))
 
             EventDate(
                 date = viewState.date,
                 showDialog = viewState.showDateDialog,
                 effectHandler = effectHandler
             )
-            Divider(modifier = Modifier.padding(vertical = 16.dp))
+            Divider(modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.step4)))
 
             EventDescription(
                 desc = viewState.description,
@@ -137,8 +138,7 @@ private fun NewEventContent(
             )
 
             BoxWithConstraints(
-                modifier = Modifier
-                    .fillMaxSize()
+                modifier = Modifier.fillMaxSize().weight(1f)
             ) {
                 Button(
                     onClick = {
@@ -148,11 +148,11 @@ private fun NewEventContent(
                         .wrapContentHeight()
                         .fillMaxWidth()
                         .align(Alignment.BottomCenter)
-                        .padding(top = 8.dp)
+                        .padding(top = dimensionResource(id = R.dimen.step2))
                 ) {
                     Text(
                         text = stringResource(R.string.new_event_screen_confirm_button),
-                        fontSize = 18.sp
+                        style = MaterialTheme.typography.titleMedium
                     )
                 }
             }
@@ -169,7 +169,7 @@ private fun NewEventToolbar(
         title = {
             Text(
                 text = stringResource(R.string.new_event),
-                fontSize = 24.sp
+                style = MaterialTheme.typography.bodyLarge
             )
         },
         navigationIcon = {
@@ -196,9 +196,9 @@ private fun EventTitle(
     Column {
         Text(
             text = stringResource(R.string.new_event_add_name),
-            fontSize = 18.sp,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier
-                .padding(bottom = 8.dp)
+                .padding(bottom = dimensionResource(id = R.dimen.step2))
                 .align(Alignment.CenterHorizontally)
         )
         OutlinedTextField(
@@ -208,7 +208,7 @@ private fun EventTitle(
                     effectHandler.invoke(NewEventEffect.OnNameChanged(it))
                 }
             },
-            textStyle = TextStyle(fontSize = 18.sp),
+            textStyle = MaterialTheme.typography.bodyMedium,
             singleLine = true,
             leadingIcon = {
                 Icon(
@@ -217,7 +217,10 @@ private fun EventTitle(
                 )
             },
             trailingIcon = {
-                Text(text = "${name.length}/$maxSize")
+                Text(
+                    text = "${name.length}/$maxSize",
+                    style = MaterialTheme.typography.bodySmall
+                )
             },
             modifier = Modifier.fillMaxWidth()
         )
@@ -239,125 +242,49 @@ private fun EventTime(
             painterResource(id = R.drawable.ic_time),
             contentDescription = stringResource(R.string.time_icon_in_new_event),
             modifier = Modifier
-                .padding(end = 8.dp)
+                .padding(end = dimensionResource(id = R.dimen.step2))
                 .align(Alignment.CenterVertically)
         )
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
         ) {
-            TimeStartPicker(
-                timeStart = viewState.timeStart,
+            CustomTimePicker(
+                title = stringResource(id = R.string.start_time_picker_title),
+                time = viewState.timeStart,
                 showDialog = viewState.showTimeStartDialog,
-                effectHandler = effectHandler
+                onOpen = {
+                    effectHandler.invoke(NewEventEffect.OnTimeStartClick)
+                },
+                onClose = {
+                    effectHandler.invoke(NewEventEffect.OnCloseTimeStartDialog)
+                },
+                onConfirm = {
+                    effectHandler.invoke(NewEventEffect.OnConfirmTimeStartDialog(it))
+                }
             )
             Text(
                 text = stringResource(R.string.time_divider),
-                fontSize = 20.sp,
+                style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
             )
-            TimeFinishPicker(
-                timeFinish = viewState.timeFinish,
+            CustomTimePicker(
+                title = stringResource(id = R.string.finish_time_picker_title),
+                time = viewState.timeFinish,
                 showDialog = viewState.showTimeFinishDialog,
-                effectHandler = effectHandler
-            )
-        }
-    }
-}
-
-@Composable
-private fun TimeStartPicker(
-    timeStart: LocalTime,
-    showDialog: Boolean,
-    effectHandler: (NewEventEffect) -> Unit
-) {
-    val timeDialogState = rememberMaterialDialogState()
-    Row(
-        modifier = Modifier.wrapContentWidth()
-    ) {
-        TextButton(
-            onClick = {
-                effectHandler.invoke(NewEventEffect.OnTimeStartClick)
-            },
-            modifier = Modifier.wrapContentWidth()
-        ) {
-            Text(
-                text = timeStart.formatToTime(),
-                fontSize = 20.sp,
-            )
-        }
-        MaterialDialog(
-            dialogState = timeDialogState,
-            buttons = {
-                positiveButton(text = stringResource(R.string.date_picker_positive))
-                negativeButton(text = stringResource(R.string.date_picker_negative)) {
-                    effectHandler.invoke(NewEventEffect.OnCloseTimeStartDialog)
-                }
-            },
-            onCloseRequest = {
-                effectHandler.invoke(NewEventEffect.OnCloseTimeStartDialog)
-            },
-            autoDismiss = false,
-
-        ) {
-            timepicker(
-                initialTime = timeStart,
-                title = stringResource(R.string.start_time_picker_title),
-                is24HourClock = true
-            ) {
-                effectHandler.invoke(NewEventEffect.OnConfirmTimeStartDialog(it))
-            }
-        }
-    }
-    if (showDialog) { timeDialogState.show() } else { timeDialogState.hide() }
-}
-
-@Composable
-private fun TimeFinishPicker(
-    timeFinish: LocalTime,
-    showDialog: Boolean,
-    effectHandler: (NewEventEffect) -> Unit
-) {
-    val timeDialogState = rememberMaterialDialogState()
-    Row(
-        modifier = Modifier.wrapContentWidth()
-    ) {
-        TextButton(
-            onClick = {
-                effectHandler.invoke(NewEventEffect.OnTimeFinishClick)
-            },
-            modifier = Modifier.wrapContentWidth()
-        ) {
-            Text(
-                text = timeFinish.formatToTime(),
-                fontSize = 20.sp,
-            )
-        }
-        MaterialDialog(
-            dialogState = timeDialogState,
-            buttons = {
-                positiveButton(text = stringResource(R.string.date_picker_positive))
-                negativeButton(text = stringResource(R.string.date_picker_negative)) {
+                onOpen = {
+                    effectHandler.invoke(NewEventEffect.OnTimeFinishClick)
+                },
+                onClose = {
                     effectHandler.invoke(NewEventEffect.OnCloseTimeFinishDialog)
+                },
+                onConfirm = {
+                    effectHandler.invoke(NewEventEffect.OnConfirmTimeFinishDialog(it))
                 }
-            },
-            onCloseRequest = {
-                effectHandler.invoke(NewEventEffect.OnCloseTimeFinishDialog)
-            },
-            autoDismiss = true
-        ) {
-            timepicker(
-                initialTime = timeFinish,
-                title = stringResource(R.string.finish_time_picker_time),
-                is24HourClock = true
-            ) {
-                effectHandler.invoke(NewEventEffect.OnConfirmTimeFinishDialog(it))
-            }
+            )
         }
     }
-    if (showDialog) { timeDialogState.show() } else { timeDialogState.hide() }
 }
 
 @Composable
@@ -374,7 +301,7 @@ private fun EventDate(
             painterResource(id = R.drawable.ic_calendar),
             contentDescription = stringResource(R.string.calendar_icon_in_new_event),
             modifier = Modifier
-                .padding(end = 8.dp)
+                .padding(end = dimensionResource(id = R.dimen.step2))
                 .align(Alignment.CenterVertically)
         )
         TextButton(
@@ -385,31 +312,25 @@ private fun EventDate(
         ) {
             Text(
                 text = date.formatToDate(),
-                fontSize = 20.sp,
+                style = MaterialTheme.typography.titleLarge
             )
         }
-        MaterialDialog(
+        CustomDatePickerDialog(
+            date = date,
             dialogState = dateDialogState,
-            buttons = {
-                positiveButton(text = stringResource(R.string.date_picker_positive))
-                negativeButton(text = stringResource(R.string.date_picker_negative)) {
-                    effectHandler.invoke(NewEventEffect.OnCloseDateDialog)
-                }
-            },
-            onCloseRequest = {
+            onClose = {
                 effectHandler.invoke(NewEventEffect.OnCloseDateDialog)
             },
-            autoDismiss = false
-        ) {
-            datepicker(
-                initialDate = date,
-                title = stringResource(R.string.date_picker_title),
-            ) {
+            onConfirm = {
                 effectHandler.invoke(NewEventEffect.OnConfirmDateDialog(it))
             }
-        }
+        )
     }
-    if (showDialog) { dateDialogState.show() } else { dateDialogState.hide() }
+    if (showDialog) {
+        dateDialogState.show()
+    } else {
+        dateDialogState.hide()
+    }
 }
 
 @Composable
@@ -420,9 +341,9 @@ private fun EventDescription(
     Column {
         Text(
             text = stringResource(R.string.new_event_add_description),
-            fontSize = 18.sp,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier
-                .padding(bottom = 8.dp)
+                .padding(bottom = dimensionResource(id = R.dimen.step2))
                 .align(Alignment.CenterHorizontally)
         )
         OutlinedTextField(
@@ -430,7 +351,7 @@ private fun EventDescription(
             onValueChange = {
                 effectHandler.invoke(NewEventEffect.OnDescriptionChanged(it))
             },
-            textStyle = TextStyle(fontSize = 18.sp),
+            textStyle = MaterialTheme.typography.bodyMedium,
             leadingIcon = {
                 Icon(
                     painterResource(id = R.drawable.ic_description),
@@ -439,8 +360,7 @@ private fun EventDescription(
             },
             minLines = 4,
             maxLines = 14,
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }

@@ -9,6 +9,5 @@ import java.time.LocalDate
 data class CalendarState(
     val date: LocalDate = LocalDate.now(),
     val eventInfoList: PersistentList<EventInfo>? = null,
-    val showDialog: Boolean = false,
-    val error: String? = null,
+    val showDialog: Boolean = false
 )

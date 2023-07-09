@@ -1,10 +1,15 @@
 package com.practice.calendar.di
 
 import com.practice.calendar.domain.usecase.CreateEventUseCase
+import com.practice.calendar.domain.usecase.impl.CreateEventUseCaseImpl
 import com.practice.calendar.domain.usecase.DeleteEventUseCase
+import com.practice.calendar.domain.usecase.impl.DeleteEventUseCaseImpl
 import com.practice.calendar.domain.usecase.GetEventUseCase
+import com.practice.calendar.domain.usecase.impl.GetEventUseCaseImpl
 import com.practice.calendar.domain.usecase.GetEventsUseCase
+import com.practice.calendar.domain.usecase.impl.GetEventsUseCaseImpl
 import com.practice.calendar.domain.usecase.UpdateEventsFromRemoteUseCase
+import com.practice.calendar.domain.usecase.impl.UpdateEventsFromRemoteUseCaseImpl
 import com.practice.calendar.ui.screen.calendar.CalendarViewModel
 import com.practice.calendar.ui.screen.detail.DetailViewModel
 import com.practice.calendar.ui.screen.newevent.NewEventViewModel
@@ -14,23 +19,23 @@ import org.koin.dsl.module
 val appModule = module {
 
     factory<GetEventsUseCase> {
-        GetEventsUseCase(eventRepository = get())
+        GetEventsUseCaseImpl(eventRepository = get())
     }
 
     factory<UpdateEventsFromRemoteUseCase> {
-        UpdateEventsFromRemoteUseCase(eventRepository = get())
+        UpdateEventsFromRemoteUseCaseImpl(eventRepository = get())
     }
 
     factory<GetEventUseCase> {
-        GetEventUseCase(eventRepository = get())
+        GetEventUseCaseImpl(eventRepository = get())
     }
 
     factory<CreateEventUseCase> {
-        CreateEventUseCase(eventRepository = get())
+        CreateEventUseCaseImpl(eventRepository = get())
     }
 
     factory<DeleteEventUseCase> {
-        DeleteEventUseCase(eventRepository = get())
+        DeleteEventUseCaseImpl(eventRepository = get())
     }
 
     viewModel<CalendarViewModel> {

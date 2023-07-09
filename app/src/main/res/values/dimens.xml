@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="step1">4.dp</dimen>
+    <dimen name="step2">8.dp</dimen>
+    <dimen name="step3">12.dp</dimen>
+    <dimen name="step4">16.dp</dimen>
+    <dimen name="calendar_height">1470.dp</dimen>
+    <dimen name="calendar_hour">60.dp</dimen>
+    <dimen name="calendar_half_of_hour">30.dp</dimen>
+</resources>

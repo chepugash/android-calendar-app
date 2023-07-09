@@ -24,4 +24,5 @@ sealed interface NewEventEffect {
     object OnConfirmClick : NewEventEffect
 
     object OnBackClick : NewEventEffect
+
 }
