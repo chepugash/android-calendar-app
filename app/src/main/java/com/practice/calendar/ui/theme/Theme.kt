@@ -39,25 +39,25 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-        primary = LightPrimary,
-        secondary = LightSecondary,
-        tertiary = LightTertiary,
-        background = LightBackground,
-        surface = LightSurface,
-        onPrimary = LightOnPrimary,
-        onSecondary = LightOnSecondary,
-        onTertiary = LightOnTertiary,
-        onBackground = LightOnBackground,
-        onSurface = LightOnSurface,
-        primaryContainer = LightPrimaryContainer,
-        onPrimaryContainer = LightOnPrimaryContainer,
-        secondaryContainer = LightSecondaryContainer,
-        onSecondaryContainer = LightOnSecondaryContainer,
-        tertiaryContainer = LightTertiaryContainer,
-        onTertiaryContainer = LightOnTertiaryContainer,
-        outline = LightOutlined,
-        surfaceVariant = LightSurfaceVariant,
-        onSurfaceVariant = LightOnSurfaceVariant
+    primary = LightPrimary,
+    secondary = LightSecondary,
+    tertiary = LightTertiary,
+    background = LightBackground,
+    surface = LightSurface,
+    onPrimary = LightOnPrimary,
+    onSecondary = LightOnSecondary,
+    onTertiary = LightOnTertiary,
+    onBackground = LightOnBackground,
+    onSurface = LightOnSurface,
+    primaryContainer = LightPrimaryContainer,
+    onPrimaryContainer = LightOnPrimaryContainer,
+    secondaryContainer = LightSecondaryContainer,
+    onSecondaryContainer = LightOnSecondaryContainer,
+    tertiaryContainer = LightTertiaryContainer,
+    onTertiaryContainer = LightOnTertiaryContainer,
+    outline = LightOutlined,
+    surfaceVariant = LightSurfaceVariant,
+    onSurfaceVariant = LightOnSurfaceVariant
 )
 @Composable
 fun CalendarTheme(

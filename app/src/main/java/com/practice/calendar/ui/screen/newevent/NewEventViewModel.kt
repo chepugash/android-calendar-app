@@ -178,6 +178,7 @@ class NewEventViewModel(
 
     private fun onConfirmClick() {
         viewModelScope.launch {
+            _action.emit(null)
             try {
                 validate(state.value.name, state.value.timeStart, state.value.timeFinish)
                 val createdId = createEventUseCase(EventInfo(

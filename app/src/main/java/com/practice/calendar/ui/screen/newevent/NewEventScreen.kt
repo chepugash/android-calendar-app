@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -33,25 +32,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.practice.calendar.R
 import com.practice.calendar.ui.navigation.DestinationScreen
-import com.practice.calendar.ui.screen.components.CustomDatePickerDialog
-import com.practice.calendar.ui.screen.components.CustomTimePicker
+import com.practice.calendar.ui.screen.component.CustomDatePickerDialog
+import com.practice.calendar.ui.screen.component.CustomTimePicker
 import com.practice.calendar.util.formatToDate
-import com.practice.calendar.util.formatToTime
-import com.vanpra.composematerialdialogs.MaterialDialog
-import com.vanpra.composematerialdialogs.datetime.date.DatePickerDefaults
-import com.vanpra.composematerialdialogs.datetime.date.datepicker
-import com.vanpra.composematerialdialogs.datetime.time.TimePickerDefaults
-import com.vanpra.composematerialdialogs.datetime.time.timepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDate
-import java.time.LocalTime
 
 @Composable
 fun NewEventScreen(
@@ -148,8 +138,7 @@ private fun NewEventContent(
             )
 
             BoxWithConstraints(
-                modifier = Modifier
-                    .fillMaxSize()
+                modifier = Modifier.fillMaxSize().weight(1f)
             ) {
                 Button(
                     onClick = {
@@ -258,8 +247,7 @@ private fun EventTime(
         )
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
         ) {
             CustomTimePicker(
                 title = stringResource(id = R.string.start_time_picker_title),

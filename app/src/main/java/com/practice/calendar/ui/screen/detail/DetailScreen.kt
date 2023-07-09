@@ -1,18 +1,15 @@
 package com.practice.calendar.ui.screen.detail
 
-import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -30,16 +27,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.practice.calendar.R
 import com.practice.calendar.ui.navigation.DestinationScreen
-import com.practice.calendar.ui.screen.calendar.AddButton
-import com.practice.calendar.ui.screen.calendar.CalendarToolbar
 import com.practice.calendar.util.formatToDate
 import com.practice.calendar.util.formatToTime
 import org.koin.androidx.compose.koinViewModel
@@ -67,29 +59,6 @@ fun DetailScreen(
 
     BackHandler {
         viewModel::effect.invoke(DetailEffect.OnBackClick)
-    }
-}
-
-@Composable
-private fun DetailScreenActions(
-    navController: NavController,
-    viewAction: DetailAction?
-) {
-    val context = LocalContext.current
-    LaunchedEffect(viewAction) {
-        when (viewAction) {
-            null -> Unit
-            DetailAction.NavigateBack -> {
-                navController.popBackStack(
-                    route = DestinationScreen.CalendarScreen.route,
-                    inclusive = false
-                )
-            }
-
-            is DetailAction.ShowToast -> {
-                Toast.makeText(context, viewAction.message, Toast.LENGTH_LONG).show()
-            }
-        }
     }
 }
 
@@ -131,12 +100,33 @@ private fun DetailContent(
                 )
                 Divider(modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.step4)))
 
-                EventDate(
-                    date = info.dateStart.formatToDate()
-                )
+                EventDate(date = info.dateStart.formatToDate())
                 Divider(modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.step4)))
 
                 EventDescription(desc = info.description)
+            }
+        }
+    }
+}
+
+@Composable
+private fun DetailScreenActions(
+    navController: NavController,
+    viewAction: DetailAction?
+) {
+    val context = LocalContext.current
+    LaunchedEffect(viewAction) {
+        when (viewAction) {
+            null -> Unit
+            DetailAction.NavigateBack -> {
+                navController.popBackStack(
+                    route = DestinationScreen.CalendarScreen.route,
+                    inclusive = false
+                )
+            }
+
+            is DetailAction.ShowToast -> {
+                Toast.makeText(context, viewAction.message, Toast.LENGTH_LONG).show()
             }
         }
     }

@@ -47,13 +47,10 @@ import androidx.navigation.navOptions
 import com.practice.calendar.R
 import com.practice.calendar.domain.entity.EventInfo
 import com.practice.calendar.ui.navigation.DestinationScreen
-import com.practice.calendar.ui.screen.components.CustomDatePickerDialog
+import com.practice.calendar.ui.screen.component.CustomDatePickerDialog
 import com.practice.calendar.util.formatToDate
 import com.practice.calendar.util.formatToTime
 import com.practice.calendar.util.timeInMinutes
-import com.vanpra.composematerialdialogs.MaterialDialog
-import com.vanpra.composematerialdialogs.datetime.date.DatePickerDefaults
-import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import org.koin.androidx.compose.koinViewModel
 
@@ -153,8 +150,7 @@ fun AddButton(effectHandler: (CalendarEffect) -> Unit) {
                 effectHandler.invoke(CalendarEffect.OnAddEventClick)
             },
             shape = CircleShape,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
+            modifier = Modifier.align(Alignment.BottomEnd)
         ) {
             Icon(
                 painterResource(id = R.drawable.ic_add),
@@ -233,8 +229,7 @@ fun EventList(
     val events = viewState.eventInfoList
     if (events != null) {
         Box(
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = Modifier.fillMaxSize()
         ) {
             repeat(events.size) { index ->
                 EventCard(
@@ -265,8 +260,7 @@ fun EventCard(
             .clickable { onCLick.invoke(eventInfo.id) }
     ) {
         Column(
-            modifier = Modifier
-                .padding(dimensionResource(id = R.dimen.step1))
+            modifier = Modifier.padding(dimensionResource(id = R.dimen.step1))
         ) {
             Text(
                 text = eventInfo.name,
@@ -274,7 +268,8 @@ fun EventCard(
                 style = MaterialTheme.typography.bodySmall
             )
             Text(
-                text = "${eventInfo.dateStart.formatToTime()} - ${eventInfo.dateFinish.formatToTime()}",
+                text = "${eventInfo.dateStart.formatToTime()}" +
+                        " - ${eventInfo.dateFinish.formatToTime()}",
                 maxLines = 1,
                 style = MaterialTheme.typography.bodySmall
             )

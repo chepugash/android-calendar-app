@@ -1,4 +1,4 @@
-package com.practice.calendar.ui.screen.components
+package com.practice.calendar.ui.screen.component
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.wrapContentWidth

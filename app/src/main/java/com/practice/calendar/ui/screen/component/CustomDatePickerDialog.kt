@@ -1,10 +1,9 @@
-package com.practice.calendar.ui.screen.components
+package com.practice.calendar.ui.screen.component
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.practice.calendar.R
-import com.practice.calendar.ui.screen.calendar.CalendarEffect
 import com.practice.calendar.util.Click
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.MaterialDialogState
