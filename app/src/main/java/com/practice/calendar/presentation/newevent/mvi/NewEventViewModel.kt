@@ -165,17 +165,20 @@ class NewEventViewModel(
     }
 
     private fun validate(name: String, timeStart: LocalTime, timeFinish: LocalTime) {
-        if (name.isBlank()) throw EmptyNameException("Name can not be empty")
+        if (name.isBlank()) throw EmptyNameException(EMPTY_NAME_EXC)
         if (timeFinish <= timeStart) {
-            throw TimeFinishLessThanStartException("Finish time must be more than start time")
+            throw TimeFinishLessThanStartException(FINISH_TIME_EXC)
         }
         if (timeStart.hour == timeFinish.hour
             && timeFinish.minute - timeStart.minute < MIN_MINUTES) {
-            throw TimePeriodLessThanHalfHour("Time period can not be less than $MIN_MINUTES minutes")
+            throw TimePeriodLessThanHalfHour(TIME_PERIOD_EXC)
         }
     }
 
     companion object {
         private const val MIN_MINUTES = 30
+        private const val EMPTY_NAME_EXC = "Name can not be empty"
+        private const val FINISH_TIME_EXC = "Finish time must be more than start time"
+        private const val TIME_PERIOD_EXC = "Time period can not be less than $MIN_MINUTES minutes"
     }
 }

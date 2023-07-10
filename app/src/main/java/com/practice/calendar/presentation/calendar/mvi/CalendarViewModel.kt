@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practice.calendar.domain.usecase.GetEventsUseCase
 import com.practice.calendar.domain.usecase.UpdateEventsFromRemoteUseCase
+import com.practice.calendar.util.groupByTime
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -45,9 +47,9 @@ class CalendarViewModel(
         viewModelScope.launch {
             try {
                 updateEventsFromRemoteUseCase()
-                getEventsUseCase(date).collect { list ->
+                getEventsUseCase(date).groupByTime().collect {list ->
                     val newState = _state.value.copy(
-                        eventInfoList = list?.map { sublist ->
+                        eventInfoList = list?.map {sublist ->
                             sublist.toPersistentList()
                         }?.toPersistentList()
                     )
@@ -89,7 +91,8 @@ class CalendarViewModel(
 
     private fun onAddEventClick() {
         viewModelScope.launch {
-            _action.emit(CalendarAction.NavigateAddEvent)
+            _action.emit(CalendarAction.NavigateAddEvent
+            )
         }
     }
 }
