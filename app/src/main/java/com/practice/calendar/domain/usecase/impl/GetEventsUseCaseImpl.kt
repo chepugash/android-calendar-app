@@ -15,6 +15,13 @@ class GetEventsUseCaseImpl(
         return eventRepository.getEventsByDate(date).groupByTime()
     }
 
+    /*
+    Все вот эти танцы с бубнами нужны для того, чтобы если события пересекались
+    по времени, то показывались в одной строчке, а не наслаивались друг на друга.
+    В дата слое я это мапить не стал потому что думаю не место там этому
+    Тут оставлять тоже как то странно
+    Д и вообще опять матрешка ебучая с этими списками в списках в флоу
+    */
     private fun Flow<List<EventInfo>?>.groupByTime(): Flow<List<List<EventInfo>>?> {
         return this.map {list ->
             if (list != null) {
