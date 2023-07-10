@@ -6,5 +6,5 @@ import java.time.LocalDate
 
 interface GetEventsUseCase {
 
-    operator fun invoke(date: LocalDate): Flow<List<EventInfo>?>
+    operator fun invoke(date: LocalDate): Flow<List<List<EventInfo>>?>
 }

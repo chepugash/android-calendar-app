@@ -5,6 +5,7 @@ package com.practice.calendar.ui.screen.calendar
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -232,11 +233,9 @@ fun EventList(
             modifier = Modifier.fillMaxSize()
         ) {
             repeat(events.size) { index ->
-                EventCard(
-                    eventInfo = events[index],
-                    onCLick = {
-                        effectHandler.invoke(CalendarEffect.OnEventClick(events[index].id))
-                    }
+                EventRow(
+                    events = events[index],
+                    effectHandler = effectHandler
                 )
             }
         }
@@ -244,20 +243,43 @@ fun EventList(
 }
 
 @Composable
+fun EventRow(
+    events: List<EventInfo>,
+    effectHandler: (CalendarEffect) -> Unit
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        repeat(events.size) {index ->
+            EventCard(
+                eventInfo = events[index],
+                onCLick = {
+                    effectHandler.invoke(CalendarEffect.OnEventClick(events[index].id))
+                },
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+@Composable
 fun EventCard(
     eventInfo: EventInfo,
-    onCLick: (Long) -> Unit
+    onCLick: (Long) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val minuteStart = eventInfo.dateStart.timeInMinutes()
     val minuteFinish = eventInfo.dateFinish.timeInMinutes()
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .offset(y = minuteStart.dp + dimensionResource(id = R.dimen.calendar_half_of_hour))
             .height((minuteFinish - minuteStart).dp)
             .padding(start = dimensionResource(id = R.dimen.step2))
             .clip(RoundedCornerShape(dimensionResource(id = R.dimen.step3)))
-            .clickable { onCLick.invoke(eventInfo.id) }
+            .clickable { onCLick.invoke(eventInfo.id) },
     ) {
         Column(
             modifier = Modifier.padding(dimensionResource(id = R.dimen.step1))
