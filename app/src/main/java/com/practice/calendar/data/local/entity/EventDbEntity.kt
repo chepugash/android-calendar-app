@@ -12,10 +12,10 @@ import org.jetbrains.annotations.NotNull
         Index("date_start")
     ]
 )
-data class EventDbEntity(
+class EventDbEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(name = "date_start") val dateStart: Long,
     @ColumnInfo(name = "date_finish") val dateFinish: Long,
-    val name: String,
-    val description: String
+    @ColumnInfo(name = "name") val name: String,
+    @ColumnInfo(name = "description") val description: String
 )

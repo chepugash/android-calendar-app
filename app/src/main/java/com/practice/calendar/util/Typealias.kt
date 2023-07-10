@@ -1,5 +1,7 @@
 package com.practice.calendar.util
 
-import com.vanpra.composematerialdialogs.datetime.time.TimePickerDefaults
+import com.practice.calendar.domain.entity.EventInfo
 
 typealias Click = () -> Unit
+
+typealias EventsGroupedByTime = List<List<EventInfo>>?

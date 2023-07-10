@@ -10,9 +10,9 @@ import com.practice.calendar.domain.usecase.GetEventsUseCase
 import com.practice.calendar.domain.usecase.impl.GetEventsUseCaseImpl
 import com.practice.calendar.domain.usecase.UpdateEventsFromRemoteUseCase
 import com.practice.calendar.domain.usecase.impl.UpdateEventsFromRemoteUseCaseImpl
-import com.practice.calendar.ui.screen.calendar.CalendarViewModel
-import com.practice.calendar.ui.screen.detail.DetailViewModel
-import com.practice.calendar.ui.screen.newevent.NewEventViewModel
+import com.practice.calendar.presentation.calendar.mvi.CalendarViewModel
+import com.practice.calendar.presentation.detail.mvi.DetailViewModel
+import com.practice.calendar.presentation.newevent.mvi.NewEventViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
