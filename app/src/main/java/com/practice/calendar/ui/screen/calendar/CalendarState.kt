@@ -8,6 +8,6 @@ import java.time.LocalDate
 @Immutable
 data class CalendarState(
     val date: LocalDate = LocalDate.now(),
-    val eventInfoList: PersistentList<EventInfo>? = null,
+    val eventInfoList: PersistentList<PersistentList<EventInfo>>? = null,
     val showDialog: Boolean = false
 )

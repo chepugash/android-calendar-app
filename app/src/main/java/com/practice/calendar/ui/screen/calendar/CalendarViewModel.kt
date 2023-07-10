@@ -46,9 +46,12 @@ class CalendarViewModel(
             try {
                 updateEventsFromRemoteUseCase()
                 getEventsUseCase(date).collect { list ->
+
                     _state.emit(
                         _state.value.copy(
-                            eventInfoList = list?.toPersistentList()
+                            eventInfoList = list?.map { sublist ->
+                                    sublist.toPersistentList()
+                            }?.toPersistentList()
                         )
                     )
                 }
