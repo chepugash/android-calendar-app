@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
+    alias(libs.plugins.kotlinKsp)
 }
 
 android {
@@ -18,6 +19,10 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+
+        ksp {
+            arg("room.schemaLocation", "$projectDir/schemas")
+        }
     }
 
     buildTypes {
@@ -27,11 +32,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
     }
     buildFeatures {
         compose true
@@ -50,12 +55,44 @@ dependencies {
 
     implementation libs.core.ktx
     implementation libs.lifecycle.runtime.ktx
+    implementation libs.kotlinx.collections.immutable
+
+    // compose region
     implementation libs.activity.compose
     implementation platform(libs.compose.bom)
+    implementation libs.material3
     implementation libs.ui
     implementation libs.ui.graphics
     implementation libs.ui.tooling.preview
-    implementation libs.material3
     debugImplementation libs.ui.tooling
     debugImplementation libs.ui.test.manifest
+    implementation libs.androidx.lifecycle.runtime.compose
+    implementation libs.androidx.lifecycle.viewmodel.compose
+    implementation libs.material.dialogs
+    implementation libs.navigation.compose
+    // end region
+
+    // room region
+    implementation libs.room.runtime
+    ksp libs.room.compiler
+    implementation libs.room.ktx
+    // end region
+
+    // gson converter region
+    implementation libs.gson
+    // end region
+
+    // koin region
+    implementation libs.koin.core
+    implementation libs.koin.android
+    implementation libs.koin.android.compose
+    // end region
+
+    // test region
+    testImplementation libs.test.junit
+    testImplementation libs.test.mockk
+    testImplementation libs.test.junit.kotlin
+    testImplementation libs.test.coroutines
+    androidTestImplementation libs.test.android
+    // end region
 }

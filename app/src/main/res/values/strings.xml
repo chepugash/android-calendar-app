@@ -1,3 +1,27 @@
 <resources>
     <string name="app_name">Calendar</string>
+    <string name="add_button_icon" translatable="false">add button icon</string>
+    <string name="toolbar_calendar_icon" translatable="false">toolbar calendar icon</string>
+    <string name="date_picker_positive">ok</string>
+    <string name="date_picker_negative">close</string>
+    <string name="date_picker_title">Pick a date</string>
+    <string name="detail_toolbar_back_icon" translatable="false">detail toolbar back icon</string>
+    <string name="detail_toolbar_delete_icon" translatable="false">detail toolbar delete icon</string>
+    <string name="watches_icon_in_details" translatable="false">watches icon in details</string>
+    <string name="time_divider" translatable="false">-</string>
+    <string name="calendar_icon_in_details" translatable="false">calendar icon in details</string>
+    <string name="new_event_screen_confirm_button">Confirm</string>
+    <string name="new_event">New event</string>
+    <string name="toolbar_back_icon_in_new_event" translatable="false">toolbar back icon in new event</string>
+    <string name="new_event_add_name">Add a name:</string>
+    <string name="title_text_edit_icon" translatable="false">title text edit icon</string>
+    <string name="time_icon_in_new_event" translatable="false">time icon in new event</string>
+    <string name="start_time_picker_title">Pick a start time</string>
+    <string name="finish_time_picker_title">Pick a finish time</string>
+    <string name="calendar_icon_in_new_event" translatable="false">calendar icon in new event</string>
+    <string name="new_event_add_description">Add a description:</string>
+    <string name="description_edit_icon_in_new_event" translatable="false">description edit icon in new event</string>
+    <string name="more_icon_in_calendar" translatable="false">more icon in calendar</string>
+    <string name="event">Event</string>
+    <string name="title_icon_in_details" translatable="false">title icon in details</string>
 </resources>
