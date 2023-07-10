@@ -1,4 +1,4 @@
-package com.practice.calendar.presentation.newevent.mvi
+package com.practice.calendar.presentation.feature.newevent.mvi
 
 import androidx.compose.runtime.Immutable
 import java.time.LocalDate

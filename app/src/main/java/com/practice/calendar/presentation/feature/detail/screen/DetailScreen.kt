@@ -1,4 +1,4 @@
-package com.practice.calendar.presentation.detail.screen
+package com.practice.calendar.presentation.feature.detail.screen
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -31,10 +31,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.practice.calendar.R
-import com.practice.calendar.presentation.detail.mvi.DetailAction
-import com.practice.calendar.presentation.detail.mvi.DetailEffect
-import com.practice.calendar.presentation.detail.mvi.DetailState
-import com.practice.calendar.presentation.detail.mvi.DetailViewModel
+import com.practice.calendar.presentation.feature.detail.mvi.DetailAction
+import com.practice.calendar.presentation.feature.detail.mvi.DetailEffect
+import com.practice.calendar.presentation.feature.detail.mvi.DetailState
+import com.practice.calendar.presentation.feature.detail.mvi.DetailViewModel
 import com.practice.calendar.presentation.navigation.DestinationScreen
 import com.practice.calendar.util.formatToDate
 import com.practice.calendar.util.formatToTime
@@ -75,7 +75,7 @@ private fun DetailContent(
     LaunchedEffect(effectHandler) {
         effectHandler.invoke(DetailEffect.ShowEvent(eventId))
     }
-    val info = viewState.eventInfo ?: return
+    val info = viewState.eventEntity ?: return
     Scaffold(
         topBar = {
             DetailToolbar(

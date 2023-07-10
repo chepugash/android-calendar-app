@@ -1,4 +1,4 @@
-package com.practice.calendar.presentation.newevent.mvi
+package com.practice.calendar.presentation.feature.newevent.mvi
 
 sealed interface NewEventAction {
 

@@ -2,11 +2,10 @@ package com.practice.calendar.domain.repository
 
 import com.practice.calendar.domain.entity.EventInfo
 import kotlinx.coroutines.flow.Flow
-import java.time.LocalDate
 
 interface EventRepository {
 
-    fun getEventsByDate(date: LocalDate): Flow<List<EventInfo>?>
+    fun getEventsByDate(date: Long): Flow<List<EventInfo>?>
 
     suspend fun updateEventsFromRemote()
 

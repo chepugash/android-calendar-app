@@ -1,4 +1,4 @@
-package com.practice.calendar.presentation.newevent.screen
+package com.practice.calendar.presentation.feature.newevent.screen
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -35,13 +35,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.practice.calendar.R
-import com.practice.calendar.presentation.navigation.DestinationScreen
 import com.practice.calendar.presentation.component.CustomDatePickerDialog
 import com.practice.calendar.presentation.component.CustomTimePicker
-import com.practice.calendar.presentation.newevent.mvi.NewEventAction
-import com.practice.calendar.presentation.newevent.mvi.NewEventEffect
-import com.practice.calendar.presentation.newevent.mvi.NewEventState
-import com.practice.calendar.presentation.newevent.mvi.NewEventViewModel
+import com.practice.calendar.presentation.feature.newevent.mvi.NewEventAction
+import com.practice.calendar.presentation.feature.newevent.mvi.NewEventEffect
+import com.practice.calendar.presentation.feature.newevent.mvi.NewEventState
+import com.practice.calendar.presentation.feature.newevent.mvi.NewEventViewModel
+import com.practice.calendar.presentation.navigation.DestinationScreen
 import com.practice.calendar.util.formatToDate
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import org.koin.androidx.compose.koinViewModel
@@ -142,7 +142,9 @@ private fun NewEventContent(
             )
 
             BoxWithConstraints(
-                modifier = Modifier.fillMaxSize().weight(1f)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f)
             ) {
                 Button(
                     onClick = {

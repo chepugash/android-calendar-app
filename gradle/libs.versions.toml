@@ -15,6 +15,10 @@ gson = "2.10"
 material-dialogs = "0.8.1-rc"
 kotlinx-collections-immutable = "0.3.5"
 koin = "3.4.0"
+junit = "4.13.2"
+mockk = "1.12.4"
+test-android = "1.1.5"
+coroutines = "1.6.4"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -44,10 +48,17 @@ koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin"
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 koin-android-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
 
+test-junit = { group = "junit", name = "junit", version.ref = "junit" }
+test-mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+test-junit-kotlin = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version.ref = "kotlin" }
+test-android = { group = "androidx.test.ext", name = "junit", version.ref = "test-android" }
+test-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
+
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation-compose" }
 
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle-runtime-ktx" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle-runtime-ktx" }
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

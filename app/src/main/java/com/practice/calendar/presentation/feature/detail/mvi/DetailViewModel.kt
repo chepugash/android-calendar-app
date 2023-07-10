@@ -1,9 +1,10 @@
-package com.practice.calendar.presentation.detail.mvi
+package com.practice.calendar.presentation.feature.detail.mvi
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practice.calendar.domain.usecase.DeleteEventUseCase
 import com.practice.calendar.domain.usecase.GetEventUseCase
+import com.practice.calendar.presentation.entity.PresentationMapper
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -14,7 +15,8 @@ import kotlinx.coroutines.launch
 
 class DetailViewModel(
     private val getEventUseCase: GetEventUseCase,
-    private val deleteEventUseCase: DeleteEventUseCase
+    private val deleteEventUseCase: DeleteEventUseCase,
+    private val mapper: PresentationMapper
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<DetailState>(DetailState())
@@ -26,7 +28,7 @@ class DetailViewModel(
         get() = _action.asSharedFlow()
 
     fun effect(detailEffect: DetailEffect) {
-        when(detailEffect) {
+        when (detailEffect) {
             is DetailEffect.ShowEvent -> getEvent(detailEffect.eventId)
             is DetailEffect.OnDeleteClick -> onDeleteClick(detailEffect.eventId)
             DetailEffect.OnBackClick -> onBackClick()
@@ -37,7 +39,8 @@ class DetailViewModel(
         viewModelScope.launch {
             try {
                 getEventUseCase(eventId).collect {
-                    val newState = _state.value.copy(eventInfo = it)
+                    val mappedEvent = mapper.eventInfoToEventPresentationEntity(it)
+                    val newState = _state.value.copy(eventEntity = mappedEvent)
                     _state.emit(newState)
                 }
             } catch (e: Throwable) {

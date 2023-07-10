@@ -1,6 +1,6 @@
 package com.practice.calendar.util
 
-import com.practice.calendar.domain.entity.EventInfo
+import com.practice.calendar.presentation.entity.EventPresentationEntity
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -33,15 +33,15 @@ fun LocalDateTime.timeInMinutes(): Int {
     return this.hour * MINUTES_IN_HOUR + this.minute
 }
 
-fun Flow<List<EventInfo>?>.groupByTime(): Flow<EventsGroupedByTime> {
-    return this.map {list ->
+fun Flow<List<EventPresentationEntity>?>.groupByTime(): Flow<EventsGroupedByTime> {
+    return this.map { list ->
         if (list != null) {
-            val intersectingEvents = mutableListOf<List<EventInfo>>()
+            val intersectingEvents = mutableListOf<List<EventPresentationEntity>>()
             val visited = BooleanArray(list.size) { false }
 
             for (i in list.indices) {
                 if (!visited[i]) {
-                    val intersectingEvent = mutableListOf<EventInfo>()
+                    val intersectingEvent = mutableListOf<EventPresentationEntity>()
                     intersectingEvent.add(list[i])
                     visited[i] = true
 
@@ -63,6 +63,9 @@ fun Flow<List<EventInfo>?>.groupByTime(): Flow<EventsGroupedByTime> {
     }
 }
 
-private fun isIntersecting(event1: EventInfo, event2: EventInfo): Boolean {
+private fun isIntersecting(
+    event1: EventPresentationEntity,
+    event2: EventPresentationEntity
+): Boolean {
     return event1.dateStart <= event2.dateFinish && event2.dateStart <= event1.dateFinish
 }
