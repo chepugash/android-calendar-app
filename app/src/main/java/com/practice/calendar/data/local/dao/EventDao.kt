@@ -1,7 +1,6 @@
 package com.practice.calendar.data.local.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -14,8 +13,10 @@ interface EventDao {
     @Query("SELECT * FROM events WHERE id = :id")
     fun getById(id: Long): Flow<EventDbEntity?>
 
-    @Query("SELECT * FROM events " +
-            "WHERE date_start >= :dateStart AND date_finish < :dateFinish")
+    @Query(
+        "SELECT * FROM events " +
+                "WHERE date_start >= :dateStart AND date_finish < :dateFinish"
+    )
     fun getByDate(
         dateStart: Long,
         dateFinish: Long = dateStart + MILLISECONDS_IN_DAY

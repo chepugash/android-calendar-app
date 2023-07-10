@@ -146,17 +146,19 @@ class NewEventViewModel(
         viewModelScope.launch {
             try {
                 validate(state.value.name, state.value.timeStart, state.value.timeFinish)
-                val createdId = createEventUseCase(EventInfo(
-                    id = 0,
-                    name = state.value.name,
-                    dateStart = mapper.localDateTimeToTimestamp(
-                        state.value.date.atTime(state.value.timeStart)
-                    ),
-                    dateFinish = mapper.localDateTimeToTimestamp(
-                        state.value.date.atTime(state.value.timeFinish)
-                    ),
-                    description = state.value.description
-                ))
+                val createdId = createEventUseCase(
+                    EventInfo(
+                        id = 0,
+                        name = state.value.name,
+                        dateStart = mapper.localDateTimeToTimestamp(
+                            state.value.date.atTime(state.value.timeStart)
+                        ),
+                        dateFinish = mapper.localDateTimeToTimestamp(
+                            state.value.date.atTime(state.value.timeFinish)
+                        ),
+                        description = state.value.description
+                    )
+                )
                 _action.emit(NewEventAction.NavigateToDetail(createdId))
             } catch (e: Throwable) {
                 _action.emit(NewEventAction.ShowToast(e.message.toString()))

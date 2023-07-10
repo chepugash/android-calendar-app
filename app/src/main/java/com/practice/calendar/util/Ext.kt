@@ -34,7 +34,7 @@ fun LocalDateTime.timeInMinutes(): Int {
 }
 
 fun Flow<List<EventPresentationEntity>?>.groupByTime(): Flow<EventsGroupedByTime> {
-    return this.map {list ->
+    return this.map { list ->
         if (list != null) {
             val intersectingEvents = mutableListOf<List<EventPresentationEntity>>()
             val visited = BooleanArray(list.size) { false }
@@ -63,6 +63,9 @@ fun Flow<List<EventPresentationEntity>?>.groupByTime(): Flow<EventsGroupedByTime
     }
 }
 
-private fun isIntersecting(event1: EventPresentationEntity, event2: EventPresentationEntity): Boolean {
+private fun isIntersecting(
+    event1: EventPresentationEntity,
+    event2: EventPresentationEntity
+): Boolean {
     return event1.dateStart <= event2.dateFinish && event2.dateStart <= event1.dateFinish
 }

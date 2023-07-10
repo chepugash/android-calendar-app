@@ -34,8 +34,7 @@ class EventRepositoryImpl(
         dao.createEvent(eventMapper.eventInfoToEventDbEntity(eventInfo))
     }
 
-    override suspend fun deleteEvent(eventId: Long) = withContext(dispatcher)
-    {
+    override suspend fun deleteEvent(eventId: Long) = withContext(dispatcher) {
         dao.delete(eventId)
     }
 }

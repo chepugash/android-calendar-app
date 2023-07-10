@@ -103,9 +103,10 @@ private fun CalendarContent(
             AddButton(effectHandler = effectHandler)
         },
     ) {
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(top = it.calculateTopPadding())
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = it.calculateTopPadding())
         ) {
             Row(
                 modifier = Modifier
@@ -138,9 +139,11 @@ private fun CalendarScreenActions(
                     DestinationScreen.DetailScreen.withArgs(viewAction.eventId.toString()),
                 )
             }
+
             is CalendarAction.ShowToast -> {
                 Toast.makeText(context, viewAction.message, Toast.LENGTH_LONG).show()
             }
+
             CalendarAction.NavigateAddEvent -> {
                 navController.navigate(
                     DestinationScreen.NewEventScreen.route,
@@ -260,7 +263,7 @@ fun EventRow(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        repeat(events.size) {index ->
+        repeat(events.size) { index ->
             EventCard(
                 eventInfo = events[index],
                 onCLick = {

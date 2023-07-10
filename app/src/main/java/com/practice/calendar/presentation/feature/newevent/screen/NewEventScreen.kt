@@ -142,7 +142,9 @@ private fun NewEventContent(
             )
 
             BoxWithConstraints(
-                modifier = Modifier.fillMaxSize().weight(1f)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f)
             ) {
                 Button(
                     onClick = {

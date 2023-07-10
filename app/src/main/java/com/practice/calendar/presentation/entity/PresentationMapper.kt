@@ -25,7 +25,7 @@ class PresentationMapper {
     fun eventInfoListFlowToEventPresentationEntityListFlow(
         eventInfoListFlow: Flow<List<EventInfo>?>
     ): Flow<List<EventPresentationEntity>?> {
-        return eventInfoListFlow.map {list ->
+        return eventInfoListFlow.map { list ->
             list?.map { entity ->
                 eventInfoToEventPresentationEntity(entity)!!
             }

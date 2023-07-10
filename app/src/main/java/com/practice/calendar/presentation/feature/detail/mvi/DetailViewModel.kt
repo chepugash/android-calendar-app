@@ -28,7 +28,7 @@ class DetailViewModel(
         get() = _action.asSharedFlow()
 
     fun effect(detailEffect: DetailEffect) {
-        when(detailEffect) {
+        when (detailEffect) {
             is DetailEffect.ShowEvent -> getEvent(detailEffect.eventId)
             is DetailEffect.OnDeleteClick -> onDeleteClick(detailEffect.eventId)
             DetailEffect.OnBackClick -> onBackClick()
