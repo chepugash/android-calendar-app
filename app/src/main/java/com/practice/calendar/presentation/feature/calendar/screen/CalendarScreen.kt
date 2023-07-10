@@ -89,6 +89,9 @@ private fun CalendarContent(
     viewState: CalendarState,
     effectHandler: (CalendarEffect) -> Unit
 ) {
+    LaunchedEffect(Unit) {
+        effectHandler.invoke(CalendarEffect.OnConfirmDialog(viewState.date))
+    }
     Scaffold(
         topBar = {
             CalendarToolbar(

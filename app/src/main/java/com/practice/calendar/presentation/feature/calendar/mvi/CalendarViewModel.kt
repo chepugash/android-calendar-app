@@ -1,10 +1,12 @@
 package com.practice.calendar.presentation.feature.calendar.mvi
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practice.calendar.domain.usecase.GetEventsUseCase
 import com.practice.calendar.domain.usecase.UpdateEventsFromRemoteUseCase
 import com.practice.calendar.presentation.entity.PresentationMapper
+import com.practice.calendar.util.formatToDate
 import com.practice.calendar.util.groupByTime
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -13,6 +15,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -40,25 +43,22 @@ class CalendarViewModel(
         }
     }
 
-    init {
-        getEvents(state.value.date)
-    }
-
-    private fun getEvents(date: LocalDate) {
+    private fun getEvents() {
         viewModelScope.launch {
             try {
                 updateEventsFromRemoteUseCase()
-                val mappedList = mapper.eventInfoListFlowToEventPresentationEntityListFlow(
-                    getEventsUseCase(mapper.localDateToTimestamp(date))
+                mapper.eventInfoListFlowToEventPresentationEntityListFlow(
+                    getEventsUseCase(mapper.localDateToTimestamp(state.value.date))
                 ).groupByTime()
-                mappedList.collect { list ->
+                .collect { list ->
                     val newState = _state.value.copy(
-                        eventPresentationEntityList = list?.map {sublist ->
+                        eventPresentationEntityList = list?.map { sublist ->
                             sublist.toPersistentList()
                         }?.toPersistentList()
                     )
                     _state.emit(newState)
                 }
+
             } catch (e: Throwable) {
                 _action.emit(CalendarAction.ShowToast(e.message.toString()))
             }
@@ -69,7 +69,7 @@ class CalendarViewModel(
         viewModelScope.launch {
             val newState = _state.value.copy(showDialog = false, date = effect.date)
             _state.emit(newState)
-            getEvents(state.value.date)
+            getEvents()
         }
     }
 

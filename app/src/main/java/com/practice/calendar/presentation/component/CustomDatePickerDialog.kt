@@ -1,10 +1,13 @@
 package com.practice.calendar.presentation.component
 
+import android.util.Log
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.res.stringResource
 import com.practice.calendar.R
 import com.practice.calendar.util.Click
+import com.practice.calendar.util.formatToDate
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.MaterialDialogState
 import com.vanpra.composematerialdialogs.datetime.date.DatePickerDefaults
