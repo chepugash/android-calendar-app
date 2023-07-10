@@ -1,4 +1,4 @@
-package com.practice.calendar.presentation.calendar.mvi
+package com.practice.calendar.presentation.feature.calendar.mvi
 
 sealed interface CalendarAction {
 

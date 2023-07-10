@@ -36,8 +36,8 @@ class EventMapper {
     private fun eventDbEntityToEventInfo(eventDbEntity: EventDbEntity): EventInfo {
         return EventInfo(
             id = eventDbEntity.id,
-            dateStart = timestampToLocalDateTime(eventDbEntity.dateStart),
-            dateFinish = timestampToLocalDateTime(eventDbEntity.dateFinish),
+            dateStart = eventDbEntity.dateStart,
+            dateFinish = eventDbEntity.dateFinish,
             name = eventDbEntity.name,
             description = eventDbEntity.description
         )
@@ -64,23 +64,10 @@ class EventMapper {
     fun eventInfoToEventDbEntity(eventInfo: EventInfo): EventDbEntity {
         return EventDbEntity(
             id = eventInfo.id,
-            dateStart = localDateTimeToTimestamp(eventInfo.dateStart),
-            dateFinish = localDateTimeToTimestamp(eventInfo.dateFinish),
+            dateStart = eventInfo.dateStart,
+            dateFinish = eventInfo.dateFinish,
             name = eventInfo.name,
             description = eventInfo.description
         )
-    }
-
-    private fun timestampToLocalDateTime(timestamp: Long): LocalDateTime {
-        val instant = Instant.ofEpochMilli(timestamp)
-        return LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
-    }
-
-    private fun localDateTimeToTimestamp(ldt: LocalDateTime): Long {
-        return ldt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-    }
-
-    fun localDateToTimestamp(ld: LocalDate): Long {
-        return ld.atTime(LocalTime.MIDNIGHT).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
     }
 }

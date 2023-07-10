@@ -1,9 +1,10 @@
-package com.practice.calendar.presentation.newevent.mvi
+package com.practice.calendar.presentation.feature.newevent.mvi
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practice.calendar.domain.entity.EventInfo
 import com.practice.calendar.domain.usecase.CreateEventUseCase
+import com.practice.calendar.presentation.entity.PresentationMapper
 import com.practice.calendar.util.EmptyNameException
 import com.practice.calendar.util.TimeFinishLessThanStartException
 import com.practice.calendar.util.TimePeriodLessThanHalfHour
@@ -18,7 +19,8 @@ import java.time.LocalDate
 import java.time.LocalTime
 
 class NewEventViewModel(
-    private val createEventUseCase: CreateEventUseCase
+    private val createEventUseCase: CreateEventUseCase,
+    private val mapper: PresentationMapper
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<NewEventState>(NewEventState())
@@ -147,8 +149,12 @@ class NewEventViewModel(
                 val createdId = createEventUseCase(EventInfo(
                     id = 0,
                     name = state.value.name,
-                    dateStart = state.value.date.atTime(state.value.timeStart),
-                    dateFinish = state.value.date.atTime(state.value.timeFinish),
+                    dateStart = mapper.localDateTimeToTimestamp(
+                        state.value.date.atTime(state.value.timeStart)
+                    ),
+                    dateFinish = mapper.localDateTimeToTimestamp(
+                        state.value.date.atTime(state.value.timeFinish)
+                    ),
                     description = state.value.description
                 ))
                 _action.emit(NewEventAction.NavigateToDetail(createdId))
@@ -170,7 +176,8 @@ class NewEventViewModel(
             throw TimeFinishLessThanStartException(FINISH_TIME_EXC)
         }
         if (timeStart.hour == timeFinish.hour
-            && timeFinish.minute - timeStart.minute < MIN_MINUTES) {
+            && timeFinish.minute - timeStart.minute < MIN_MINUTES
+        ) {
             throw TimePeriodLessThanHalfHour(TIME_PERIOD_EXC)
         }
     }

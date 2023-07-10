@@ -1,4 +1,4 @@
-package com.practice.calendar.presentation.detail.mvi
+package com.practice.calendar.presentation.feature.detail.mvi
 
 sealed interface DetailEffect {
 

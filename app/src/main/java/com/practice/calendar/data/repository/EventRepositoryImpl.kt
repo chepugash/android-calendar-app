@@ -6,7 +6,6 @@ import com.practice.calendar.data.remote.EventApi
 import com.practice.calendar.domain.entity.EventInfo
 import com.practice.calendar.domain.repository.EventRepository
 import kotlinx.coroutines.flow.Flow
-import java.time.LocalDate
 
 class EventRepositoryImpl(
     private val api: EventApi,
@@ -14,8 +13,8 @@ class EventRepositoryImpl(
     private val eventMapper: EventMapper
 ) : EventRepository {
 
-    override fun getEventsByDate(date: LocalDate): Flow<List<EventInfo>?> {
-        val events = dao.getByDate(eventMapper.localDateToTimestamp(date))
+    override fun getEventsByDate(date: Long): Flow<List<EventInfo>?> {
+        val events = dao.getByDate(date)
         return eventMapper.eventDbEntityListFlowToEventInfoListFlow(events)
     }
 

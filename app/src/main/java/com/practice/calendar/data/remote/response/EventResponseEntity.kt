@@ -1,6 +1,5 @@
 package com.practice.calendar.data.remote.response
 
-
 import com.google.gson.annotations.SerializedName
 
 class EventResponseEntity(

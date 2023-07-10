@@ -6,9 +6,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.practice.calendar.presentation.calendar.screen.CalendarScreen
-import com.practice.calendar.presentation.detail.screen.DetailScreen
-import com.practice.calendar.presentation.newevent.screen.NewEventScreen
+import com.practice.calendar.presentation.feature.calendar.screen.CalendarScreen
+import com.practice.calendar.presentation.feature.detail.screen.DetailScreen
+import com.practice.calendar.presentation.feature.newevent.screen.NewEventScreen
 
 private const val ID = "id"
 

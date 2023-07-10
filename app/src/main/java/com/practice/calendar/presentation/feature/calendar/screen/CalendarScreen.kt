@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 
-package com.practice.calendar.presentation.calendar.screen
+package com.practice.calendar.presentation.feature.calendar.screen
 
 import android.annotation.SuppressLint
 import android.widget.Toast
@@ -46,17 +46,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
 import com.practice.calendar.R
-import com.practice.calendar.domain.entity.EventInfo
-import com.practice.calendar.presentation.calendar.mvi.CalendarAction
-import com.practice.calendar.presentation.calendar.mvi.CalendarEffect
-import com.practice.calendar.presentation.calendar.mvi.CalendarState
-import com.practice.calendar.presentation.calendar.mvi.CalendarViewModel
 import com.practice.calendar.presentation.component.CustomDatePickerDialog
+import com.practice.calendar.presentation.entity.EventPresentationEntity
+import com.practice.calendar.presentation.feature.calendar.mvi.CalendarAction
+import com.practice.calendar.presentation.feature.calendar.mvi.CalendarEffect
+import com.practice.calendar.presentation.feature.calendar.mvi.CalendarState
+import com.practice.calendar.presentation.feature.calendar.mvi.CalendarViewModel
 import com.practice.calendar.presentation.navigation.DestinationScreen
 import com.practice.calendar.util.formatToDate
 import com.practice.calendar.util.formatToTime
 import com.practice.calendar.util.timeInMinutes
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import kotlinx.collections.immutable.PersistentList
 import org.koin.androidx.compose.koinViewModel
 
 private const val HOURS_IN_DAY = 24
@@ -231,7 +232,7 @@ fun EventList(
     viewState: CalendarState,
     effectHandler: (CalendarEffect) -> Unit
 ) {
-    val events = viewState.eventInfoList
+    val events = viewState.eventPresentationEntityList
     if (events != null) {
         Box(
             modifier = Modifier.fillMaxSize()
@@ -248,7 +249,7 @@ fun EventList(
 
 @Composable
 fun EventRow(
-    events: List<EventInfo>,
+    events: PersistentList<EventPresentationEntity>,
     effectHandler: (CalendarEffect) -> Unit
 ) {
     Row(
@@ -270,7 +271,7 @@ fun EventRow(
 
 @Composable
 fun EventCard(
-    eventInfo: EventInfo,
+    eventInfo: EventPresentationEntity,
     onCLick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
