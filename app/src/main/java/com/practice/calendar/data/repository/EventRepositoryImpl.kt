@@ -1,6 +1,5 @@
 package com.practice.calendar.data.repository
 
-import android.util.Log
 import com.practice.calendar.data.local.dao.EventDao
 import com.practice.calendar.data.mapper.EventMapper
 import com.practice.calendar.data.remote.EventApi
@@ -25,15 +24,11 @@ class EventRepositoryImpl(
         dao.saveEvents(eventMapper.eventResponseEntityListToEventDbEntityList(remoteEvents))
     }
 
-    override fun getEventById(eventId: Long): Flow<EventInfo?> {
-        return eventMapper.eventDbEntityFlowToEventInfoFlow(dao.getById(eventId))
-    }
+    override fun getEventById(eventId: Long): Flow<EventInfo?> =
+        eventMapper.eventDbEntityFlowToEventInfoFlow(dao.getById(eventId))
 
-    override suspend fun createEvent(eventInfo: EventInfo): Long {
-        return dao.createEvent(eventMapper.eventInfoToEventDbEntity(eventInfo))
-    }
+    override suspend fun createEvent(eventInfo: EventInfo): Long =
+        dao.createEvent(eventMapper.eventInfoToEventDbEntity(eventInfo))
 
-    override suspend fun deleteEvent(eventId: Long) {
-        dao.delete(eventId)
-    }
+    override suspend fun deleteEvent(eventId: Long) = dao.delete(eventId)
 }

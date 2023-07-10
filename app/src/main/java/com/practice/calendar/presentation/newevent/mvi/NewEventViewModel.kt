@@ -54,7 +54,7 @@ class NewEventViewModel(
 
             NewEventEffect.OnDateClick -> onDateClick()
             is NewEventEffect.OnDescriptionChanged -> {
-                onDescriptionChanged(newEventEffect.desc)
+                onDescriptionChanged(newEventEffect.description)
             }
 
             is NewEventEffect.OnNameChanged -> {
@@ -65,120 +65,83 @@ class NewEventViewModel(
 
     private fun onTimeStartClick() {
         viewModelScope.launch {
-            _state.emit(
-                _state.value.copy(
-                    showTimeStartDialog = true
-                )
-            )
+            val newState = _state.value.copy(showTimeStartDialog = true)
+            _state.emit(newState)
         }
     }
 
     private fun onTimeFinishClick() {
         viewModelScope.launch {
-            _state.emit(
-                _state.value.copy(
-                    showTimeFinishDialog = true
-                )
-            )
+            val newState = _state.value.copy(showTimeFinishDialog = true)
+            _state.emit(newState)
         }
     }
 
     private fun onNameChanged(name: String) {
         viewModelScope.launch {
-            _state.emit(
-                _state.value.copy(
-                    name = name
-                )
-            )
+            val newState = _state.value.copy(name = name)
+            _state.emit(newState)
         }
     }
 
-    private fun onDescriptionChanged(desc: String) {
+    private fun onDescriptionChanged(description: String) {
         viewModelScope.launch {
-            _state.emit(
-                _state.value.copy(
-                    description = desc
-                )
-            )
+            val newState = _state.value.copy(description = description)
+            _state.emit(newState)
         }
     }
 
     private fun onDateClick() {
         viewModelScope.launch {
-            _state.emit(
-                _state.value.copy(
-                    showDateDialog = true
-                )
-            )
+            val newState = _state.value.copy(showDateDialog = true)
+            _state.emit(newState)
         }
     }
 
     private fun onConfirmTimeStartDialog(timeStart: LocalTime) {
         viewModelScope.launch {
-            _state.emit(
-                _state.value.copy(
-                    showTimeStartDialog = false,
-                    timeStart = timeStart
-                )
-            )
+            val newState = _state.value.copy(showTimeStartDialog = false, timeStart = timeStart)
+            _state.emit(newState)
         }
     }
 
     private fun onConfirmTimeFinishDialog(timeFinish: LocalTime) {
         viewModelScope.launch {
-            _state.emit(
-                _state.value.copy(
-                    showTimeFinishDialog = false,
-                    timeFinish = timeFinish
-                )
-            )
+            val newState = _state.value.copy(showTimeFinishDialog = false, timeFinish = timeFinish)
+            _state.emit(newState)
         }
     }
 
     private fun onConfirmDateDialog(date: LocalDate) {
         viewModelScope.launch {
-            _state.emit(
-                _state.value.copy(
-                    showDateDialog = false,
-                    date = date
-                )
-            )
+            val newState = _state.value.copy(showDateDialog = false, date = date)
+            _state.emit(newState)
         }
     }
 
     private fun onCloseTimeStartDialog() {
         viewModelScope.launch {
-            _state.emit(
-                _state.value.copy(
-                    showTimeStartDialog = false
-                )
-            )
+            val newState = _state.value.copy(showTimeStartDialog = false)
+            _state.emit(newState)
         }
     }
 
     private fun onCloseTimeFinishDialog() {
         viewModelScope.launch {
-            _state.emit(
-                _state.value.copy(
-                    showTimeFinishDialog = false
-                )
-            )
+            val newState = _state.value.copy(showTimeFinishDialog = false)
+            _state.emit(newState)
         }
     }
 
     private fun onCloseDateDialog() {
         viewModelScope.launch {
-            _state.emit(
-                _state.value.copy(
-                    showDateDialog = false
-                )
-            )
+            val newState = _state.value.copy(showDateDialog = false)
+            _state.emit(newState)
         }
     }
 
     private fun onConfirmClick() {
         viewModelScope.launch {
-            _action.emit(null)
             try {
                 validate(state.value.name, state.value.timeStart, state.value.timeFinish)
                 val createdId = createEventUseCase(EventInfo(
@@ -188,32 +151,31 @@ class NewEventViewModel(
                     dateFinish = state.value.date.atTime(state.value.timeFinish),
                     description = state.value.description
                 ))
-                _action.emit(
-                    NewEventAction.NavigateToDetail(createdId)
-                )
+                _action.emit(NewEventAction.NavigateToDetail(createdId))
             } catch (e: Throwable) {
-                _action.emit(
-                    NewEventAction.ShowToast(e.message.toString())
-                )
+                _action.emit(NewEventAction.ShowToast(e.message.toString()))
             }
         }
     }
 
     private fun onBackClick() {
         viewModelScope.launch {
-            _action.emit(
-                NewEventAction.NavigateBack
-            )
+            _action.emit(NewEventAction.NavigateBack)
         }
     }
 
     private fun validate(name: String, timeStart: LocalTime, timeFinish: LocalTime) {
         if (name.isBlank()) throw EmptyNameException("Name can not be empty")
-        if (timeFinish <= timeStart){
+        if (timeFinish <= timeStart) {
             throw TimeFinishLessThanStartException("Finish time must be more than start time")
         }
-        if (timeStart.hour == timeFinish.hour && timeFinish.minute - timeStart.minute < 30) {
-            throw TimePeriodLessThanHalfHour("Time period can not be less than 30 minutes")
+        if (timeStart.hour == timeFinish.hour
+            && timeFinish.minute - timeStart.minute < MIN_MINUTES) {
+            throw TimePeriodLessThanHalfHour("Time period can not be less than $MIN_MINUTES minutes")
         }
+    }
+
+    companion object {
+        private const val MIN_MINUTES = 30
     }
 }

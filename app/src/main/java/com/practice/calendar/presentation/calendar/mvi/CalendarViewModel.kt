@@ -46,14 +46,12 @@ class CalendarViewModel(
             try {
                 updateEventsFromRemoteUseCase()
                 getEventsUseCase(date).collect { list ->
-
-                    _state.emit(
-                        _state.value.copy(
-                            eventInfoList = list?.map { sublist ->
-                                    sublist.toPersistentList()
-                            }?.toPersistentList()
-                        )
+                    val newState = _state.value.copy(
+                        eventInfoList = list?.map { sublist ->
+                            sublist.toPersistentList()
+                        }?.toPersistentList()
                     )
+                    _state.emit(newState)
                 }
             } catch (e: Throwable) {
                 _action.emit(CalendarAction.ShowToast(e.message.toString()))
@@ -63,49 +61,35 @@ class CalendarViewModel(
 
     private fun onConfirmDialog(effect: CalendarEffect.OnConfirmDialog) {
         viewModelScope.launch {
-            _state.emit(
-                _state.value.copy(
-                    showDialog = false,
-                    date = effect.date
-                )
-            )
+            val newState = _state.value.copy(showDialog = false, date = effect.date)
+            _state.emit(newState)
             getEvents(state.value.date)
         }
     }
 
     private fun onCloseDialog() {
         viewModelScope.launch {
-            _state.emit(
-                _state.value.copy(
-                    showDialog = false,
-                )
-            )
+            val newState = _state.value.copy(showDialog = false)
+            _state.emit(newState)
         }
     }
 
     private fun onDateClick() {
         viewModelScope.launch {
-            _state.emit(
-                _state.value.copy(
-                    showDialog = true
-                )
-            )
+            val newState = _state.value.copy(showDialog = true)
+            _state.emit(newState)
         }
     }
 
     private fun onEventClick(eventId: Long) {
         viewModelScope.launch {
-            _action.emit(
-                CalendarAction.NavigateDetail(eventId = eventId)
-            )
+            _action.emit(CalendarAction.NavigateDetail(eventId = eventId))
         }
     }
 
     private fun onAddEventClick() {
         viewModelScope.launch {
-            _action.emit(
-                CalendarAction.NavigateAddEvent
-            )
+            _action.emit(CalendarAction.NavigateAddEvent)
         }
     }
 }

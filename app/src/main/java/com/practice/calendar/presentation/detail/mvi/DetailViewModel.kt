@@ -37,11 +37,8 @@ class DetailViewModel(
         viewModelScope.launch {
             try {
                 getEventUseCase(eventId).collect {
-                    _state.emit(
-                        _state.value.copy(
-                            eventInfo = it
-                        )
-                    )
+                    val newState = _state.value.copy(eventInfo = it)
+                    _state.emit(newState)
                 }
             } catch (e: Throwable) {
                 _action.emit(
@@ -55,22 +52,16 @@ class DetailViewModel(
         viewModelScope.launch {
             try {
                 deleteEventUseCase(eventId)
-                _action.emit(
-                    DetailAction.NavigateBack
-                )
+                _action.emit(DetailAction.NavigateBack)
             } catch (e: Throwable) {
-                _action.emit(
-                    DetailAction.ShowToast(e.message.toString())
-                )
+                _action.emit(DetailAction.ShowToast(e.message.toString()))
             }
         }
     }
 
     private fun onBackClick() {
         viewModelScope.launch {
-            _action.emit(
-                DetailAction.NavigateBack
-            )
+            _action.emit(DetailAction.NavigateBack)
         }
     }
 }

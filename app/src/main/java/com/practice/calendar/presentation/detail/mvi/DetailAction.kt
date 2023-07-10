@@ -4,5 +4,5 @@ sealed interface DetailAction {
 
     object NavigateBack : DetailAction
 
-    data class ShowToast(val message: String) : DetailAction
+    class ShowToast(val message: String) : DetailAction
 }

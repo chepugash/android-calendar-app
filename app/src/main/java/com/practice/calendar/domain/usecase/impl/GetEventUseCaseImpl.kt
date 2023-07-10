@@ -9,7 +9,6 @@ class GetEventUseCaseImpl(
     private val eventRepository: EventRepository
 ) : GetEventUseCase {
 
-    override operator fun invoke(eventId: Long): Flow<EventInfo?> {
-        return eventRepository.getEventById(eventId)
-    }
+    override operator fun invoke(eventId: Long): Flow<EventInfo?> =
+        eventRepository.getEventById(eventId)
 }

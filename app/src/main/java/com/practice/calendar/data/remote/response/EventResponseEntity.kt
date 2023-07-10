@@ -3,7 +3,7 @@ package com.practice.calendar.data.remote.response
 
 import com.google.gson.annotations.SerializedName
 
-data class EventResponseEntity(
+class EventResponseEntity(
     @SerializedName("date_finish")
     val dateFinish: String,
     @SerializedName("date_start")

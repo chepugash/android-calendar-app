@@ -75,40 +75,38 @@ private fun DetailContent(
     LaunchedEffect(effectHandler) {
         effectHandler.invoke(DetailEffect.ShowEvent(eventId))
     }
-    val info = viewState.eventInfo
-    if (info != null) {
-        Scaffold(
-            topBar = {
-                DetailToolbar(
-                    eventId = info.id,
-                    effectHandler = effectHandler
+    val info = viewState.eventInfo ?: return
+    Scaffold(
+        topBar = {
+            DetailToolbar(
+                eventId = info.id,
+                effectHandler = effectHandler
+            )
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    start = dimensionResource(id = R.dimen.step4),
+                    end = dimensionResource(id = R.dimen.step4),
+                    bottom = dimensionResource(id = R.dimen.step4),
+                    top = it.calculateTopPadding()
                 )
-            }
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(
-                        start = dimensionResource(id = R.dimen.step4),
-                        end = dimensionResource(id = R.dimen.step4),
-                        bottom = dimensionResource(id = R.dimen.step4),
-                        top = it.calculateTopPadding()
-                    )
-            ) {
-                EventTitle(title = info.name)
-                Divider(modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.step4)))
+            EventTitle(title = info.name)
+            Divider(modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.step4)))
 
-                EventTime(
-                    start = info.dateStart.formatToTime(),
-                    finish = info.dateFinish.formatToTime()
-                )
-                Divider(modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.step4)))
+            EventTime(
+                start = info.dateStart.formatToTime(),
+                finish = info.dateFinish.formatToTime()
+            )
+            Divider(modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.step4)))
 
-                EventDate(date = info.dateStart.formatToDate())
-                Divider(modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.step4)))
+            EventDate(date = info.dateStart.formatToDate())
+            Divider(modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.step4)))
 
-                EventDescription(desc = info.description)
-            }
+            EventDescription(desc = info.description)
         }
     }
 }

@@ -7,7 +7,6 @@ class UpdateEventsFromRemoteUseCaseImpl(
     private val eventRepository: EventRepository
 ) : UpdateEventsFromRemoteUseCase {
 
-    override suspend operator fun invoke() {
+    override suspend operator fun invoke() =
         eventRepository.updateEventsFromRemote()
-    }
 }

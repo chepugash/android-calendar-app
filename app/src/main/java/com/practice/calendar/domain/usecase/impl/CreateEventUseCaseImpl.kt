@@ -8,7 +8,6 @@ class CreateEventUseCaseImpl(
     private val eventRepository: EventRepository
 ) : CreateEventUseCase {
 
-    override suspend operator fun invoke(eventInfo: EventInfo): Long {
-        return eventRepository.createEvent(eventInfo)
-    }
+    override suspend operator fun invoke(eventInfo: EventInfo): Long =
+        eventRepository.createEvent(eventInfo)
 }

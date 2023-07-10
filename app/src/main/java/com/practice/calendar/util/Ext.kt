@@ -28,3 +28,4 @@ fun LocalTime.formatToTime(): String {
 fun LocalDateTime.timeInMinutes(): Int {
     return this.hour * MINUTES_IN_HOUR + this.minute
 }
+

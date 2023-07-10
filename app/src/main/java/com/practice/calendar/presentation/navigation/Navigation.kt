@@ -10,6 +10,8 @@ import com.practice.calendar.presentation.calendar.screen.CalendarScreen
 import com.practice.calendar.presentation.detail.screen.DetailScreen
 import com.practice.calendar.presentation.newevent.screen.NewEventScreen
 
+private const val ID = "id"
+
 @Composable
 fun Navigation() {
 
@@ -25,16 +27,16 @@ fun Navigation() {
         }
 
         composable(
-            route = DestinationScreen.DetailScreen.route + "/{id}",
+            route = DestinationScreen.DetailScreen.route + "/{$ID}",
             arguments = listOf(
-                navArgument("id") {
+                navArgument(ID) {
                     type = NavType.LongType
                     defaultValue = -1
                     nullable = false
                 }
             )
         ) { entry ->
-            entry.arguments?.getLong("id")?.let {
+            entry.arguments?.getLong(ID)?.let {
                 DetailScreen(eventId = it, navController = navController)
             }
         }
