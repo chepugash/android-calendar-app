@@ -14,7 +14,11 @@
 # Скринкаст
 
 
-https://github.com/chepugash/android-calendar-app/assets/90091175/0a088f4a-93dc-478f-adc3-06fc81730710
+
+
+https://github.com/chepugash/android-calendar-app/assets/90091175/e39bfa0a-d68d-4c06-8134-f950ad8dac62
+
+
 
 
   
